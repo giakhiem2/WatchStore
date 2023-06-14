@@ -39,7 +39,7 @@ if (isset($_POST['submit'])) {
 
             // Kiểm tra tài khoản là admin
             if ($row['role'] === '1') {
-                header("Location: admin.php");
+                header("Location: admin/index.php");
                 die();
             } else {
                 header("Location: index.php");
