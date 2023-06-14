@@ -1,5 +1,22 @@
 <?php
+include 'config.php';
 session_start();
+if (!isset($_SESSION['SESSION_EMAIL'])) {
+    header("Location: index.php");
+    die();
+}
+
+// Lấy thông tin người dùng từ cơ sở dữ liệu
+$email = $_SESSION['SESSION_EMAIL'];
+$query = mysqli_query($conn, "SELECT * FROM users WHERE email='$email'");
+
+// Kiểm tra xem có kết quả trả về hay không
+if (mysqli_num_rows($query) > 0) {
+    $row = mysqli_fetch_assoc($query);
+
+    // Tiếp tục hiển thị biểu mẫu và gán giá trị từ $row
+    // ...
+}
 
 // Check if the cart array exists in the session
 if (isset($_SESSION['cart'])) {
@@ -106,16 +123,22 @@ if (isset($_SESSION['cart'])) {
                     </div>
                     <!-- Header Right -->
                     <div class="header-right">
-                        <ul>
-                            <li>
-                                <div class="nav-search search-switch">
-                                    <span class="flaticon-search"></span>
-                                </div>
-                            </li>
-                            <li> <a href="login.php"><span class="flaticon-user"></span></a></li>
-                            <li><a href="cart.php"><span class="flaticon-shopping-cart"></span></a> </li>
-                        </ul>
-                    </div>
+                            <ul>
+                                <li>
+                                    <div class="nav-search search-switch">
+                                        <span class="flaticon-search"></span>
+                                    </div>
+                                </li>
+                                <li> <a href="login.php">
+                                        
+                                        <div class="logo-islogin-true">
+                                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXGX-RBsMEQ0I2-P8uOcEtq1tJIeFcT_cfdQ&usqp=CAU"
+                                                alt="" style="width: 32px; height: 32px">
+                                        </div>
+                                    </a></li>
+                                <li><a href="cart.php"><span class="flaticon-shopping-cart"></span></a> </li>
+                            </ul>
+                        </div>
                 </div>
                 <!-- Mobile Menu -->
                 <div class="col-12">
@@ -151,183 +174,169 @@ if (isset($_SESSION['cart'])) {
           <form class="contact_form" action="#" method="post" novalidate="novalidate">
             <div class="form-row">
               <div class="col-md-6 form-group">
-                <input type="text" class="form-control" id="last" name="last" placeholder="Name" required />
+                <input type="text" class="form-control" id="name" name="name" placeholder="Name" value="<?php echo $row['name']; ?>" required />
               </div>
             </div>
             <div class="form-row">
               <div class="col-md-6 form-group">
-                <input type="tel" class="form-control" id="number" name="number" placeholder="Phone number" pattern="0\d{9}" required />
+                <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone" pattern="0\d{9}" value="<?php echo $row['phone']; ?>" required />
                 <small>Please enter a valid phone number starting with 0.</small>
               </div>
               <div class="col-md-6 form-group">
-                <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" required />
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" value="<?php echo $row['email']; ?>" required />
                 <small>Please enter a valid email address (example: example@gmail.com).</small>
               </div>
             </div>
 
             <div class="form-row">
               <div class="col-md-12 form-group">
-                <input type="text" class="form-control" id="add1" name="add1" placeholder="Address" required />
+                <input type="text" class="form-control" id="address" name="address" placeholder="Address" value="<?php echo $row['address']; ?>" required />
               </div>
             </div>
 
             <div class="form-row">
-              <div class="col-md-12 form-group">
-                <div class="creat_account">
-                  <h3>Noted</h3>
-                </div>
-                <textarea class="form-control" name="message" id="message" rows="1" placeholder="Order Notes"></textarea>
-              </div>
-            </div>
+  <div class="col-md-12 form-group">
+    <div class="creat_account">
+      <h3>Noted</h3>
+    </div>
+    <textarea class="form-control" name="message" id="message" rows="1" placeholder="Order Notes" optional></textarea>
+  </div>
+</div>
+
+
           </form>
         </div>
         <div class="col-lg-4">
           <div class="order_box">
-            <h2>Your Order</h2>
-            <ul class="list">
-              <li>
-                <a href="cart.php">Product
-                <span>Total</span>
-</a>
-</li>
-<?php
-// Kiểm tra xem đã lưu trữ thông tin đơn hàng trong session hay chưa
-if (isset($_SESSION['selectedProducts'])) {
-  $selectedProducts = $_SESSION['selectedProducts'];
+              <h2>Your Order</h2>
+              <ul class="list">
+                <li>
+                  <a href="cart.php">Product
+                    <span>Total</span>
+                  </a>
+                </li>
+                <?php
+                // Kiểm tra xem đã lưu trữ thông tin đơn hàng trong session hay chưa
+                if (isset($_SESSION['selectedProducts'])) {
+                  $selectedProducts = $_SESSION['selectedProducts'];
 
-  // Tính tổng giá tiền của các sản phẩm
-  $totalAmount = 0;
-  foreach ($selectedProducts as $index => $selectedProduct) {
-    $product = $selectedProduct['product'];
-    $quantity = $selectedProduct['quantity'];
-    $totalPrice = $product['price'] * $quantity;
-    $totalAmount += $totalPrice;
+                  // Tính tổng giá tiền của các sản phẩm
+                  $totalAmount = 0;
+                  foreach ($selectedProducts as $index => $selectedProduct) {
+                    $product = $selectedProduct['product'];
+                    $quantity = $selectedProduct['quantity'];
+                    $totalPrice = $product['price'] * $quantity;
+                    $totalAmount += $totalPrice;
 
-    // Hiển thị thông tin sản phẩm
-    echo '<li>';
-    echo '<a href="#">';
+                    // Hiển thị thông tin sản phẩm
+                    echo '<li>';
+                    echo '<a href="#">';
 
-    // Kiểm tra xem ảnh sản phẩm có tồn tại hay không
-    if (isset($product['image'])) {
-      $imagePath = 'image/' . $product['image'];
-      echo '<img src="' . $imagePath . '" width="50px" height="50px" alt="Product Image">';
-    }
+                    // Kiểm tra xem ảnh sản phẩm có tồn tại hay không
+                    if (isset($product['image'])) {
+                      $imagePath = 'image/' . $product['image'];
+                      echo '<img src="' . $imagePath . '" width="50px" height="50px" alt="Product Image">';
+                    }
 
-    echo '<span class="middle">x ' . $quantity . '</span>';
-    echo '<span class="last">' . $totalPrice . '$</span>';
-    echo '</a>';
-    echo '</li>';
-  }
+                    echo '<span class="middle">x ' . $quantity . '</span>';
+                    echo '<span class="last">' . $totalPrice . '$</span>';
+                    echo '</a>';
+                    echo '</li>';
+                  }
 
-  // Hiển thị tổng giá tiền
+                  // Hiển thị tổng giá tiền
   echo '<li>';
   echo '<a href="#">Total';
-  echo '<span>' . $totalAmount . '$</span>';
+  echo '<span id="totalAmount">' . $totalAmount . '$</span>'; // Đặt id cho phần tổng giá trị đơn hàng
   echo '</a>';
   echo '</li>';
-} else {
-  echo '<p>No products in the cart.</p>';
-}
-?>
 
-
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css">
-
- <script>
-   function togglePaymentForms() {
-     var paymentForms = document.getElementsByClassName("payment-form");
-
-     // Ẩn tất cả các form thanh toán
-     for (var i = 0; i < paymentForms.length; i++) {
-       paymentForms[i].style.display = "none";
-     }
-
-     // Hiển thị form thanh toán khi người dùng nhấp vào "Check payments"
-     document.getElementById("checkPaymentsButton").addEventListener("click", function() {
-       for (var i = 0; i < paymentForms.length; i++) {
-         paymentForms[i].style.display = "block";
-       }
-     });
-   }
- </script>
-
-<script>
-            function togglePaymentForms() {
-              var paymentForms = document.getElementsByClassName("payment-form");
-              var paypalContainer = document.getElementById("paypal-button-container");
-
-              // Ẩn tất cả các form thanh toán
-              for (var i = 0; i < paymentForms.length; i++) {
-                paymentForms[i].style.display = "none";
-              }
-
-              // Ẩn phần PayPal
-              paypalContainer.style.display = "none";
-
-              // Hiển thị form thanh toán khi người dùng nhấp vào "Check payments"
-              document.getElementById("checkPaymentsButton").addEventListener("click", function() {
-                for (var i = 0; i < paymentForms.length; i++) {
-                  paymentForms[i].style.display = "block";
+                } else {
+                  echo '<p>No products in the cart.</p>';
                 }
-                // Hiển thị phần PayPal khi người dùng nhấp vào "Check payments"
-                paypalContainer.style.display = "block";
+                ?>
+            </ul>
+
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css">
+
+            <script>
+              function togglePaymentForms() {
+                var paymentForms = document.getElementsByClassName("payment-form");
+                var paypalContainer = document.getElementById("paypal-button-container");
+
+                // Ẩn tất cả các form thanh toán
+                for (var i = 0; i < paymentForms.length; i++) {
+                  paymentForms[i].style.display = "none";
+                }
+
+                // Ẩn phần PayPal
+                paypalContainer.style.display = "none";
+
+                // Hiển thị form thanh toán khi người dùng nhấp vào "Check payments"
+                document.getElementById("checkPaymentsButton").addEventListener("click", function() {
+                  for (var i = 0; i < paymentForms.length; i++) {
+                    paymentForms[i].style.display = "block";
+                  }
+                  // Hiển thị phần PayPal khi người dùng nhấp vào "Check payments"
+                  paypalContainer.style.display = "block";
+                });
+              }
+            </script>
+
+            <script>
+              // Lắng nghe sự kiện khi các trường nhập thay đổi
+              document.addEventListener('DOMContentLoaded', function() {
+                var form = document.querySelector('.contact_form');
+                var inputs = form.querySelectorAll('input, textarea');
+
+                // Lặp qua từng trường nhập và lắng nghe sự kiện thay đổi
+                inputs.forEach(function(input) {
+                  input.addEventListener('input', validateForm);
+                });
               });
-            }
-            // Lắng nghe sự kiện khi các trường nhập thay đổi
-document.addEventListener('DOMContentLoaded', function() {
-  var form = document.querySelector('.contact_form');
-  var inputs = form.querySelectorAll('input, textarea');
 
-  // Lặp qua từng trường nhập và lắng nghe sự kiện thay đổi
-  inputs.forEach(function(input) {
-    input.addEventListener('input', validateForm);
-  });
-});
+              // Hàm kiểm tra và cập nhật trạng thái nút Payments
+              function validateForm() {
+                var form = document.querySelector('.contact_form');
+                var inputs = form.querySelectorAll('input, textarea');
+                var isValid = true;
 
-// Hàm kiểm tra và cập nhật trạng thái nút Payments
-function validateForm() {
-  var form = document.querySelector('.contact_form');
-  var inputs = form.querySelectorAll('input, textarea');
-  var isValid = true;
+                // Kiểm tra từng trường nhập xem có giá trị hợp lệ hay không
+                inputs.forEach(function(input) {
+                  if (!input.checkValidity()) {
+                    isValid = false;
+                  }
+                });
 
-  // Kiểm tra từng trường nhập xem có giá trị hợp lệ hay không
-  inputs.forEach(function(input) {
-    if (!input.checkValidity()) {
-      isValid = false;
-    }
-  });
+                // Cập nhật trạng thái nút Payments
+                var paymentsButton = document.getElementById('checkPaymentsButton');
+                if (isValid) {
+                  paymentsButton.disabled = false;
+                } else {
+                  paymentsButton.disabled = true;
+                }
+              }
+            </script>
+            <li>
+  <a href="#">Discount code</a>
+  <input type="text" id="discountCode" placeholder="Enter discount code">
+  <button onclick="applyDiscount()">Apply</button>
+</li>
 
-  // Cập nhật trạng thái nút Payments
-  var paymentsButton = document.getElementById('checkPaymentsButton');
-  if (isValid) {
-    paymentsButton.disabled = false;
-  } else {
-    paymentsButton.disabled = true;
-  }
-}
-        </script>
-        
-        <button id="checkPaymentsButton" class="btn btn-primary" type="submit" disabled>Payments</button>
+<br>
+            <button id="checkPaymentsButton" class="btn btn-primary" type="submit" disabled>Payments</button>
 
 <form class="payment-form" method="POST" target="_blank" enctype="application/x-www-form-urlencoded" action="thanhtoanmomoqr.php" style="display: none;">
     <button type="submit" name="momo" class="btn btn-danger btn-payment">
         <span>MOMO QR</span>
     </button>
 </form>
-
 <form class="payment-form" method="POST" target="_blank" enctype="application/x-www-form-urlencoded" action="thanhtoanmomoatm.php" style="display: none;">
     <button type="submit" name="momo" class="btn btn-danger btn-payment">
         <span>MOMO ATM</span>
     </button>
 </form>
-
-<form class="payment-form" method="POST" target="_blank" enctype="application/x-www-form-urlencoded" action="thanhtoanvnpay.php" style="display: none;">
-  <button type="submit" name="redirect" class="btn btn-danger btn-payment">
-    <span>VNPAY</span>
-  </button>
-</form>
-
-
+<br>
 <p id="paymentSuccessMessage" style="display: none;">Payment successful! Thank you.</p>
 
 <div id="paypal-button-container" style="display: none;"></div>
@@ -355,7 +364,6 @@ document.querySelector('.contact_form').addEventListener('submit', function(even
             </div>
           </div>
         </section>
-        
         <!--================End Checkout Area =================-->
     </main>
     <footer>

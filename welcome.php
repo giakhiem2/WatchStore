@@ -39,7 +39,7 @@
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Lấy thông tin từ biểu mẫu
         $name = $_POST['name'];
-        $email = $_POST['email'];
+        $email = $_POST['email']; // Chỉnh sửa tại đây
         $phone = $_POST['phone'];
         $address = $_POST['address'];
 
@@ -105,18 +105,15 @@
         echo "Phone: <input type='text' name='phone' class='form-control' value='" . $row['phone'] . "' required><br>";
         echo "Address: <input type='text' name='address' class='form-control' value='" . $row['address'] . "' required><br>";
         echo "<a href='change_password.php'>Change Password</a>";
-        echo '<div class="creat_account d-flex align-items-center">
-
-</div>';
-        echo '<button type="submit" value="submit" class="btn_3" style="width: 100%; margin-top: 40px "">
+        echo '<div class="creat_account d-flex align-items-center"></div>';
+        echo '<button type="submit" value="submit" class="btn_3" style="width: 100%; margin-top: 40px">
     Update</button>';
-        echo '<a href="logout.php" style="display: block; text-align: center; margin-top: 10px" onclick="onLogout()">
-        <div class="btn_3" style="width: 100%; margin-top: 40px">
-    Logout</div>
-        </a>';
-        echo "</div>";
-        echo "</form>";
+    echo '<a href="logout.php" style="display: block; text-align: center; margin-top: 10px" onclick="onLogout()">
+    <div class="btn_3" style="width: 100%; margin-top: 40px">
+Logout</div>
 
+    </a>';
+        echo "</form>";
         echo "</div>";
         echo "</div>";
         echo "</div>";
@@ -127,7 +124,13 @@
 
     <script>
     function onLogout() {
-        localStorage.setItem("avatar", "isLogin-false")
+        localStorage.setItem("avatar", "isLogin-false");
     }
     </script>
+    <!-- Hiển thị nút "Quay về Checkout" -->
+    <a href="checkout.php" style="display: block; text-align: center; margin-top: 10px">
+        <div class="btn_3" style="width: 100%; margin-top: 40px">
+            Quay về Checkout
+        </div>
+    </a>
 </body>

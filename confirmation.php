@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+// Kiểm tra xem đã lưu trữ thông tin đơn hàng trong session hay không
+if (isset($_SESSION['selectedProducts'])) 
+  $selectedProducts = $_SESSION['selectedProducts'];
+
+  // Xóa thông tin đơn hàng trong session
+  unset($_SESSION['selectedProducts']);
+?>
 <!doctype html>
 <html lang="zxx">
 <head>
@@ -105,120 +115,84 @@
       </div>
       <!--================ confirmation part start =================-->
       <section class="confirmation_part section_padding">
-        <div class="container">
-          <div class="row">
-            <div class="col-lg-12">
-              <div class="confirmation_tittle">
-                <span>Thank you. Your order has been received.</span>
-              </div>
-            </div>
-            <div class="col-lg-6 col-lx-4">
-              <div class="single_confirmation_details">
-                <h4>order info</h4>
-                <ul>
-                  <li>
-                    <p>order number</p><span>: 60235</span>
-                  </li>
-                  <li>
-                    <p>data</p><span>: Oct 03, 2017</span>
-                  </li>
-                  <li>
-                    <p>total</p><span>: USD 2210</span>
-                  </li>
-                  <li>
-                    <p>mayment methord</p><span>: Check payments</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div class="col-lg-6 col-lx-4">
-              <div class="single_confirmation_details">
-                <h4>Billing Address</h4>
-                <ul>
-                  <li>
-                    <p>Street</p><span>: 56/8</span>
-                  </li>
-                  <li>
-                    <p>city</p><span>: Los Angeles</span>
-                  </li>
-                  <li>
-                    <p>country</p><span>: United States</span>
-                  </li>
-                  <li>
-                    <p>postcode</p><span>: 36952</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div class="col-lg-6 col-lx-4">
-              <div class="single_confirmation_details">
-                <h4>shipping Address</h4>
-                <ul>
-                  <li>
-                    <p>Street</p><span>: 56/8</span>
-                  </li>
-                  <li>
-                    <p>city</p><span>: Los Angeles</span>
-                  </li>
-                  <li>
-                    <p>country</p><span>: United States</span>
-                  </li>
-                  <li>
-                    <p>postcode</p><span>: 36952</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-lg-12">
-              <div class="order_details_iner">
-                <h3>Order Details</h3>
-                <table class="table table-borderless">
-                  <thead>
-                    <tr>
-                      <th scope="col" colspan="2">Product</th>
-                      <th scope="col">Quantity</th>
-                      <th scope="col">Total</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <th colspan="2"><span>Pixelstore fresh Blackberry</span></th>
-                      <th>x02</th>
-                      <th> <span>$720.00</span></th>
-                    </tr>
-                    <tr>
-                      <th colspan="2"><span>Pixelstore fresh Blackberry</span></th>
-                      <th>x02</th>
-                      <th> <span>$720.00</span></th>
-                    </tr>
-                    <tr>
-                      <th colspan="2"><span>Pixelstore fresh Blackberry</span></th>
-                      <th>x02</th>
-                      <th> <span>$720.00</span></th>
-                    </tr>
-                    <tr>
-                      <th colspan="3">Subtotal</th>
-                      <th> <span>$2160.00</span></th>
-                    </tr>
-                    <tr>
-                      <th colspan="3">shipping</th>
-                      <th><span>flat rate: $50.00</span></th>
-                    </tr>
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <th scope="col" colspan="3">Quantity</th>
-                      <th scope="col">Total</th>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            </div>
-          </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="confirmation_tittle">
+          <span>Thank you. Your order has been received.</span>
         </div>
-      </section>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="order_details_iner">
+          <?php
+          // Kiểm tra xem đã lưu trữ thông tin đơn hàng trong session hay không
+          if (isset($_SESSION['selectedProducts'])) {
+            $selectedProducts = $_SESSION['selectedProducts'];
+          ?>
+            <h3>Order Details</h3>
+            <table class="table table-borderless">
+              <thead>
+                <tr>
+                  <th scope="col" colspan="2">Product</th>
+                  <th scope="col">Quantity</th>
+                  <th scope="col">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                // Hiển thị thông tin đơn hàng
+                foreach ($selectedProducts as $index => $selectedProduct) {
+                  $product = $selectedProduct['product'];
+                  $quantity = $selectedProduct['quantity'];
+                  $totalPrice = $product['price'] * $quantity;
+
+                  echo '<tr>';
+                  echo '<th colspan="2"><span>' . $product['name'] . '</span></th>';
+                  echo '<th>x' . $quantity . '</th>';
+                  echo '<th><span>$' . $totalPrice . '</span></th>';
+                  echo '</tr>';
+                }
+
+                // Tính toán và hiển thị tổng giá trị đơn hàng
+                $subtotal = 0;
+                foreach ($selectedProducts as $selectedProduct) {
+                  $product = $selectedProduct['product'];
+                  $quantity = $selectedProduct['quantity'];
+                  $totalPrice = $product['price'] * $quantity;
+                  $subtotal += $totalPrice;
+                }
+
+                // Hiển thị thông tin vận chuyển
+                echo '<tr>';
+                echo '<th colspan="3">Subtotal</th>';
+                echo '<th><span>$' . $subtotal . '</span></th>';
+                echo '</tr>';
+
+                // Tính toán và hiển thị tổng giá trị đơn hàng (bao gồm cả phí vận chuyển)
+                $totalAmount = $subtotal + 50;
+
+                echo '</tbody>';
+                echo '<tfoot>';
+                echo '<tr>';
+                echo '<th colspan="3">Total</th>';
+                echo '<th><span>$' . $totalAmount . '</span></th>';
+                echo '</tr>';
+                echo '</tfoot>';
+              } else {
+                // Hiển thị thông báo cho người dùng rằng không có đơn hàng nào để hiển thị
+                echo '<p>No products in the order.</p>';
+              }
+                ?>
+            </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
       <!--================ confirmation part end =================-->
   </main>
   <footer>
