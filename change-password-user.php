@@ -23,17 +23,22 @@
             $row = mysqli_fetch_assoc($getUserResult);
             $storedPassword = $row['password'];
 
+            $currentPassword = md5($currentPassword);
+
+
             // Kiểm tra mật khẩu hiện tại
-            if (password_verify($currentPassword, $storedPassword)) {
+            if ($currentPassword == $storedPassword) {
+                
                 // Kiểm tra mật khẩu mới và xác nhận mật khẩu
                 if ($newPassword === $confirmPassword) {
                     // Hash mật khẩu mới
-                    $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+                    $hashedPassword = md5($newPassword);
 
                     // Cập nhật mật khẩu mới vào cơ sở dữ liệu
                     $updatePasswordQuery = "UPDATE users SET password='$hashedPassword' WHERE email='$email'";
                     $updatePasswordResult = mysqli_query($conn, $updatePasswordQuery);
 
+                 
                     if ($updatePasswordResult) {
                         $notification = 'Mật khẩu đã được thay đổi thành công.';
                     } else {

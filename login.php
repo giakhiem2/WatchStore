@@ -11,7 +11,7 @@ $msg = "";
 if (isset($_GET['verification'])) {
     if (mysqli_num_rows(mysqli_query($conn, "SELECT * FROM users WHERE code='{$_GET['verification']}'")) > 0) {
         $sql = "UPDATE users SET code='' WHERE code='{$_GET['verification']}'";
-        var_dump($sql);
+      
         $query = mysqli_query($conn, "UPDATE users SET code='' WHERE code='{$_GET['verification']}'");
 
         if ($query) {
