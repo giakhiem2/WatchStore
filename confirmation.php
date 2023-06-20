@@ -1,12 +1,16 @@
 <?php
 session_start();
 
-// Kiểm tra xem đã lưu trữ thông tin đơn hàng trong session hay không
-if (isset($_SESSION['selectedProducts'])) 
+// Kiểm tra xem có thông tin giỏ hàng trong session hay không
+if (isset($_SESSION['selectedProducts'])) {
   $selectedProducts = $_SESSION['selectedProducts'];
 
-  // Xóa thông tin đơn hàng trong session
-  unset($_SESSION['selectedProducts']);
+  // ... Hiển thị thông tin giỏ hàng trong trang xác nhận ...
+} else {
+  // Nếu không có thông tin giỏ hàng, chuyển hướng người dùng đến trang checkout
+  header("Location: checkout.php");
+  exit();
+}
 ?>
 <!doctype html>
 <html lang="zxx">
@@ -60,22 +64,15 @@ if (isset($_SESSION['selectedProducts']))
                                 <li><a href="blog.php">Blog</a>
                                     <ul class="submenu">
                                         <li><a href="blog.php">Blog</a></li>
-                                        <li><a href="blog-details.php">Blog Details</a></li>
+                                        <li><a href="single-blog.php">Blog Details</a></li>
                                     </ul>
                                 </li>
-                                <li><a href="#">Pages</a>
-                                    <ul class="submenu">
-                                        <li><a href="login.php">Login</a></li>
-                                        <li><a href="cart.php">Cart</a></li>
-                                        <li><a href="elements.php">Element</a></li>
-                                        <li><a href="confirmation.php">Confirmation</a></li>
-                                        <li><a href="checkout.php">Product Checkout</a></li>
-                                    </ul>
-                                </li>
+                                <li><a href="login.php">Login</a></li>
+                                <li><a href="register.php">Register</a></li>
                                 <li><a href="contact.php">Contact</a></li>
                             </ul>
                         </nav>
-                    </div>
+                    </div>                                              
                     <!-- Header Right -->
                     <div class="header-right">
                         <ul>
@@ -84,8 +81,8 @@ if (isset($_SESSION['selectedProducts']))
                                     <span class="flaticon-search"></span>
                                 </div>
                             </li>
-                            <li> <a href="login.php"><span class="flaticon-user"></span></a></li>
-                            <li><a href="cart.php"><span class="flaticon-shopping-cart"></span></a> </li>
+                            <li> <a href="cart.php"><span class="flaticon-shopping-cart">+</span></a> </li>
+                            <li><a href="login.php"><span class="flaticon-user"></span></a></li>
                         </ul>
                     </div>
                 </div>
@@ -97,24 +94,26 @@ if (isset($_SESSION['selectedProducts']))
         </div>
     </div>
     <!-- Header End -->
-  </header>
-  <main>
-      <!-- Hero Area Start-->
-      <div class="slider-area ">
-          <div class="single-slider slider-height2 d-flex align-items-center">
-              <div class="container">
-                  <div class="row">
-                      <div class="col-xl-12">
-                          <div class="hero-cap text-center">
-                              <h2>Confirmation</h2>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-      <!--================ confirmation part start =================-->
-      <section class="confirmation_part section_padding">
+</header>
+
+<!-- Slider Area Start-->
+<div class="slider-area ">
+    <div class="single-slider slider-height2 d-flex align-items-center" data-background="assets/img/hero/category.jpg">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="hero-cap text-center">
+                        <h2>Confirmation</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Slider Area End-->
+
+<!--================ confirmation part start =================-->
+<section class="confirmation_part section_padding">
   <div class="container">
     <div class="row">
       <div class="col-lg-12">
@@ -123,78 +122,56 @@ if (isset($_SESSION['selectedProducts']))
         </div>
       </div>
     </div>
-
     <div class="row">
       <div class="col-lg-12">
         <div class="order_details_iner">
-          <?php
-          // Kiểm tra xem đã lưu trữ thông tin đơn hàng trong session hay không
-          if (isset($_SESSION['selectedProducts'])) {
-            $selectedProducts = $_SESSION['selectedProducts'];
-          ?>
-            <h3>Order Details</h3>
-            <table class="table table-borderless">
-              <thead>
-                <tr>
-                  <th scope="col" colspan="2">Product</th>
-                  <th scope="col">Quantity</th>
-                  <th scope="col">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                <?php
-                // Hiển thị thông tin đơn hàng
-                foreach ($selectedProducts as $index => $selectedProduct) {
-                  $product = $selectedProduct['product'];
-                  $quantity = $selectedProduct['quantity'];
-                  $totalPrice = $product['price'] * $quantity;
-
-                  echo '<tr>';
-                  echo '<th colspan="2"><span>' . $product['name'] . '</span></th>';
-                  echo '<th>x' . $quantity . '</th>';
-                  echo '<th><span>$' . $totalPrice . '</span></th>';
-                  echo '</tr>';
-                }
-
-                // Tính toán và hiển thị tổng giá trị đơn hàng
-                $subtotal = 0;
+          <h3>Order Details</h3>
+          <table class="table table-borderless">
+            <thead>
+              <tr>
+                <th scope="col" colspan="2">Product</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total</th>
+                <th scope="col">Cancel Order</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php
+              if (isset($_SESSION['selectedProducts'])) {
+                $selectedProducts = $_SESSION['selectedProducts'];
                 foreach ($selectedProducts as $selectedProduct) {
-                  $product = $selectedProduct['product'];
-                  $quantity = $selectedProduct['quantity'];
-                  $totalPrice = $product['price'] * $quantity;
-                  $subtotal += $totalPrice;
+                  // Kiểm tra xem khóa 'image' có tồn tại hay không
+                  if (isset($selectedProduct['image'])) {
+                    $product = $selectedProduct['product'];
+                    $quantity = $selectedProduct['quantity'];
+                    $totalPrice = $product['price'] * $quantity;
+              ?>
+                  <tr>
+                    <td colspan="2"><?php echo $product['name']; ?></td>
+                    <td>x<?php echo $quantity; ?></td>
+                    <td><?php echo $totalPrice; ?>$</td>
+                    <td><a href="cancel_order.php?id=<?php echo $selectedProduct['id']; ?>">Cancel</a></td>
+                  </tr>
+              <?php
+                  }
                 }
-
-                // Hiển thị thông tin vận chuyển
-                echo '<tr>';
-                echo '<th colspan="3">Subtotal</th>';
-                echo '<th><span>$' . $subtotal . '</span></th>';
-                echo '</tr>';
-
-                // Tính toán và hiển thị tổng giá trị đơn hàng (bao gồm cả phí vận chuyển)
-                $totalAmount = $subtotal + 50;
-
-                echo '</tbody>';
-                echo '<tfoot>';
-                echo '<tr>';
-                echo '<th colspan="3">Total</th>';
-                echo '<th><span>$' . $totalAmount . '</span></th>';
-                echo '</tr>';
-                echo '</tfoot>';
-              } else {
-                // Hiển thị thông báo cho người dùng rằng không có đơn hàng nào để hiển thị
-                echo '<p>No products in the order.</p>';
               }
-                ?>
-            </table>
+              ?>
+              
+              <tr>
+                <td colspan="3">Total</td>
+                <td>Total Price</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-      <!--================ confirmation part end =================-->
-  </main>
+<!--================ confirmation part end =================-->
+</main>
   <footer>
     <!-- Footer Start-->
     <div class="footer-area footer-padding">

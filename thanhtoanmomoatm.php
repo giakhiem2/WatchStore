@@ -78,18 +78,16 @@ echo $result;
 
     $jsonResult = json_decode($result, true);  // Giải mã json
 
- // Kiểm tra xem có nhận được URL thanh toán từ MoMo hay không
+// Kiểm tra xem có nhận được URL thanh toán từ MoMo hay không
 if (isset($jsonResult['payUrl'])) {
     $payUrl = $jsonResult['payUrl'];
 
     // Chuyển hướng đến URL thanh toán của MoMo
     header('Location: ' . $payUrl);
-    // Chuyển hướng đến URL thanh toán của MoMo
-
-
 } else {
     // Xử lý khi không nhận được URL thanh toán từ MoMo
     // Ví dụ:
     echo 'Không nhận được URL thanh toán từ MoMo';
 }
+
 ?>

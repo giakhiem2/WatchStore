@@ -1,6 +1,17 @@
 <?php
-include 'config.php';
 session_start();
+
+include 'config.php';
+
+// Kiểm tra nút "MOMO" hoặc "PayPal" được nhấp
+if (isset($_POST['momo'])) {
+  // Xử lý thanh toán MOMO
+  // ...
+} elseif (isset($_POST['paypal'])) {
+  // Xử lý thanh toán PayPal
+  // ...
+}
+
 if (!isset($_SESSION['SESSION_EMAIL'])) {
     header("Location: index.php");
     die();
@@ -17,11 +28,6 @@ if (mysqli_num_rows($query) > 0) {
     // Tiếp tục hiển thị biểu mẫu và gán giá trị từ $row
     // ...
 }
-
-// Check if the cart array exists in the session
-if (isset($_SESSION['cart'])) {
-    $cart = $_SESSION['cart'];
-} 
 ?>
 
 <!doctype html>
@@ -324,22 +330,51 @@ if (isset($_SESSION['cart'])) {
 </li>
 
 <br>
-            <button id="checkPaymentsButton" class="btn btn-primary" type="submit" disabled>Payments</button>
+<button id="checkPaymentsButton" class="btn btn-primary" type="button" disabled>Payments</button>
 
 <form class="payment-form" method="POST" target="_blank" enctype="application/x-www-form-urlencoded" action="thanhtoanmomoqr.php" style="display: none;">
-    <button type="submit" name="momo" class="btn btn-danger btn-payment">
-        <span>MOMO QR</span>
-    </button>
+  <button type="submit" name="momoQR" class="btn btn-danger btn-payment">
+    <span>MOMO QR</span>
+  </button>
 </form>
+
 <form class="payment-form" method="POST" target="_blank" enctype="application/x-www-form-urlencoded" action="thanhtoanmomoatm.php" style="display: none;">
-    <button type="submit" name="momo" class="btn btn-danger btn-payment">
-        <span>MOMO ATM</span>
-    </button>
+  <button type="submit" name="momoATM" class="btn btn-danger btn-payment">
+    <span>MOMO ATM</span>
+  </button>
 </form>
+
 <br>
 <p id="paymentSuccessMessage" style="display: none;">Payment successful! Thank you.</p>
 
 <div id="paypal-button-container" style="display: none;"></div>
+
+<script>
+  togglePaymentForms();
+
+  // Lắng nghe sự kiện khi nút MOMO QR được nhấp
+  document.querySelector('form[name="momoQR"]').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // Gửi yêu cầu thanh toán MOMO QR và xử lý kết quả
+    // ...
+  });
+
+  // Lắng nghe sự kiện khi nút MOMO ATM được nhấp
+  document.querySelector('form[name="momoATM"]').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // Gửi yêu cầu thanh toán MOMO ATM và xử lý kết quả
+    // ...
+  });
+
+  // Lắng nghe sự kiện khi nút PayPal được nhấp
+  document.querySelector('#paypal-button-container').addEventListener('click', function() {
+    // Gửi yêu cầu thanh toán PayPal và xử lý kết quả
+    // ...
+  });
+</script>
+
 
 <script>
 togglePaymentForms();
@@ -364,6 +399,7 @@ document.querySelector('.contact_form').addEventListener('submit', function(even
             </div>
           </div>
         </section>
+        
         <!--================End Checkout Area =================-->
     </main>
     <footer>
@@ -535,13 +571,15 @@ document.querySelector('.contact_form').addEventListener('submit', function(even
       return actions.order.capture().then(function(details) {
         // Hiển thị thông báo giao dịch thành công cho người mua
         alert('Transaction completed by ' + details.payer.name.given_name);
-        // Thêm thông tin đơn hàng vào trang (thay thế "order-info" bằng ID hoặc lớp của phần tử chứa thông tin đơn hàng của bạn)
-        document.getElementById('order-info').innerHTML = 'Thông tin đơn hàng: ' + JSON.stringify(details);
+
+        // Chuyển hướng người dùng đến trang Confirmation.php
+        window.location.href = 'Confirmation.php';
       });
     }
   }).render('#paypal-button-container');
   // Hiển thị Smart Payment Buttons trên trang web của bạn
 </script>
+
 
 
         <script>
@@ -669,7 +707,33 @@ function validateForm() {
     paymentsButton.disabled = true;
   }
 }
-
   </script>
+  <script>
+    // Thêm đoạn mã sau vào đoạn mã Javascript đã có
+togglePaymentForms();
+
+// Xử lý sự kiện khi thanh toán thành công
+document.querySelector('.contact_form').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  // Gửi yêu cầu thanh toán và xử lý kết quả
+  // Ở đây, tôi sẽ giả định rằng thanh toán thành công
+  var paymentSuccess = true;
+
+  if (paymentSuccess) {
+    // Hiển thị thông báo khi thanh toán thành công
+    Swal.fire({
+      title: 'Payment Successful!',
+      text: 'Thank you for your purchase.',
+      icon: 'success',
+      showCancelButton: false,
+      confirmButtonText: 'OK'
+    }).then((result) => {
+      // Chuyển hướng hoặc thực hiện các tác vụ khác sau khi thanh toán thành công
+    });
+  }
+});
+</script>
+
 </body>
-</html>
+</html> 

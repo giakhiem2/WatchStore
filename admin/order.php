@@ -1,9 +1,25 @@
 <?php
 require_once('../db/dbhelper.php');
-$sql = "SELECT * FROM orders ORDER BY order_id DESC";
+$sql = "SELECT * FROM orders";
 $orders = executeResult($sql);
 ?>
-
+<?php
+if(isset($_GET['partnerCode'])){
+  $data_momo =[
+    'partnerCode' => $_GET['partnerCode'],
+    'orderId' => $_GET['orderId'],
+    'requestId' => $_GET['requestId'],
+    'amount' => $_GET['amount'],
+    'orderInfo' => $_GET['orderInfo'],
+    'orderType' => $_GET['orderType'],
+    'resultCode' => $_GET['resultCode'],
+    'message' => $_GET['message'],
+    'payType' => $_GET['payType'],
+    'responseTime' => $_GET['responseTime'],
+    'signature' => $_GET['signature']
+  ];
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 
