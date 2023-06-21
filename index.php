@@ -3,7 +3,7 @@ require_once('db/dbhelper.php');
 $sql = 'SELECT * FROM product';
 $products = executeResult($sql);
 $sql = "SELECT * FROM product ORDER BY product_id DESC LIMIT 3";
-            $p_products = executeResult($sql);
+$p_products = executeResult($sql);
 ?>
 
 <!doctype html>
@@ -30,6 +30,33 @@ $sql = "SELECT * FROM product ORDER BY product_id DESC LIMIT 3";
     <link rel="stylesheet" href="assets/css/slick.css">
     <link rel="stylesheet" href="assets/css/nice-select.css">
     <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+    .nav-search {
+        position: relative;
+    }
+
+    .nav-search input[type="text"] {
+        width: 0;
+        opacity: 0;
+        transition: width 0.5s ease, opacity 0.5s ease;
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 5px;
+        border-radius: 5px;
+    }
+
+    .nav-search .flaticon-search {
+        cursor: pointer;
+    }
+
+    .nav-search:hover input[type="text"] {
+        width: 200px;
+        opacity: 1;
+    }
+</style>
+
+
 </head>
 
 <body>
@@ -91,8 +118,11 @@ $sql = "SELECT * FROM product ORDER BY product_id DESC LIMIT 3";
                         <div class="header-right">
                             <ul>
                                 <li>
-                                    <div class="nav-search search-switch">
-                                        <span class="flaticon-search"></span>
+                                    <div class="nav-search">
+                                        <form id="search-form" action="search.php" method="GET">
+                                            <span class="flaticon-search"></span>
+                                            <input type="text" id="search-input" name="keyword" placeholder="Tìm kiếm sản phẩm">
+                                        </form>
                                     </div>
                                 </li>
                                 <li> <a href="login.php">
@@ -100,8 +130,7 @@ $sql = "SELECT * FROM product ORDER BY product_id DESC LIMIT 3";
                                             <span class="flaticon-user"></span>
                                         </div>
                                         <div class="logo-islogin-true">
-                                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXGX-RBsMEQ0I2-P8uOcEtq1tJIeFcT_cfdQ&usqp=CAU"
-                                                alt="" style="width: 32px; height: 32px">
+                                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXGX-RBsMEQ0I2-P8uOcEtq1tJIeFcT_cfdQ&usqp=CAU" alt="" style="width: 32px; height: 32px">
                                         </div>
                                     </a></li>
                                 <li><a href="cart.php"><span class="flaticon-shopping-cart"></span></a> </li>
@@ -126,8 +155,7 @@ $sql = "SELECT * FROM product ORDER BY product_id DESC LIMIT 3";
                                         minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
                                         commodo consequat is aute irure.</p>
                                     <!-- Hero-btn -->
-                                    <div class="hero__btn" data-animation="fadeInLeft" data-delay=".8s"
-                                        data-duration="2000ms">
+                                    <div class="hero__btn" data-animation="fadeInLeft" data-delay=".8s" data-duration="2000ms">
                                         <a href="shop.php" class="btn hero-btn">Shop Now</a>
                                     </div>
                                 </div>
@@ -152,8 +180,7 @@ $sql = "SELECT * FROM product ORDER BY product_id DESC LIMIT 3";
                                         minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
                                         commodo consequat is aute irure.</p>
                                     <!-- Hero-btn -->
-                                    <div class="hero__btn" data-animation="fadeInLeft" data-delay=".8s"
-                                        data-duration="2000ms">
+                                    <div class="hero__btn" data-animation="fadeInLeft" data-delay=".8s" data-duration="2000ms">
                                         <a href="industries.php" class="btn hero-btn">Shop Now</a>
                                     </div>
                                 </div>
@@ -183,21 +210,20 @@ $sql = "SELECT * FROM product ORDER BY product_id DESC LIMIT 3";
                 </div>
 
                 <div class="row">
-                    <?php foreach($p_products as $product){ ?>
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                        <div class="single-new-pro mb-30 text-center">
-                            <div class="product-img">
-                                <img src="image/<?php echo $product['image']; ?>" alt="">
-                            </div>
-                            <div class="product-caption">
-                                <h3><a
-                                        href="product_details.php?id=<?php echo $product['product_id']?>"><?php echo $product['product_name']; ?></a>
-                                </h3>
-                                <span><?php echo $product['price']; ?>$</span>
+                    <?php foreach ($p_products as $product) { ?>
+                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                            <div class="single-new-pro mb-30 text-center">
+                                <div class="product-img">
+                                    <img src="image/<?php echo $product['image']; ?>" alt="">
+                                </div>
+                                <div class="product-caption">
+                                    <h3><a href="product_details.php?id=<?php echo $product['product_id'] ?>"><?php echo $product['product_name']; ?></a>
+                                    </h3>
+                                    <span><?php echo $product['price']; ?>$</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <?php }?>
+                    <?php } ?>
                 </div>
 
             </div>
@@ -209,28 +235,24 @@ $sql = "SELECT * FROM product ORDER BY product_id DESC LIMIT 3";
                 <div class="row">
                     <div class="col-xl-6 col-lg-4 col-md-6 col-sm-6">
                         <div class="single-gallery mb-30">
-                            <div class="gallery-img big-img"
-                                style="background-image: url(assets/img/gallery/gallery1.png);"></div>
+                            <div class="gallery-img big-img" style="background-image: url(assets/img/gallery/gallery1.png);"></div>
                         </div>
                     </div>
                     <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                         <div class="single-gallery mb-30">
-                            <div class="gallery-img big-img"
-                                style="background-image: url(assets/img/gallery/gallery2.png);"></div>
+                            <div class="gallery-img big-img" style="background-image: url(assets/img/gallery/gallery2.png);"></div>
                         </div>
                     </div>
                     <div class="col-xl-3 col-lg-4 col-md-12">
                         <div class="row">
                             <div class="col-xl-12 col-lg-12 col-md-6 col-sm-6">
                                 <div class="single-gallery mb-30">
-                                    <div class="gallery-img small-img"
-                                        style="background-image: url(assets/img/gallery/gallery3.png);"></div>
+                                    <div class="gallery-img small-img" style="background-image: url(assets/img/gallery/gallery3.png);"></div>
                                 </div>
                             </div>
                             <div class="col-xl-12 col-lg-12  col-md-6 col-sm-6">
                                 <div class="single-gallery mb-30">
-                                    <div class="gallery-img small-img"
-                                        style="background-image: url(assets/img/gallery/gallery4.png);"></div>
+                                    <div class="gallery-img small-img" style="background-image: url(assets/img/gallery/gallery4.png);"></div>
                                 </div>
                             </div>
                         </div>
@@ -254,27 +276,26 @@ $sql = "SELECT * FROM product ORDER BY product_id DESC LIMIT 3";
                     </div>
                 </div>
                 <div class="row">
-                    <?php foreach($products as $product){ ?>
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                        <div class="single-popular-items mb-50 text-center">
-                            <div class="popular-img pt-2">
-                                <img src="image/<?php echo $product['image']; ?>" alt="">
-                                <div class="img-cap">
-                                    <span>Add to cart</span>
+                    <?php foreach ($products as $product) { ?>
+                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                            <div class="single-popular-items mb-50 text-center">
+                                <div class="popular-img pt-2">
+                                    <img src="image/<?php echo $product['image']; ?>" alt="">
+                                    <div class="img-cap">
+                                        <span>Add to cart</span>
+                                    </div>
+                                    <div class="favorit-items">
+                                        <span class="flaticon-heart"></span>
+                                    </div>
                                 </div>
-                                <div class="favorit-items">
-                                    <span class="flaticon-heart"></span>
+                                <div class="popular-caption">
+                                    <h3><a href="product_details.php?id=<?php echo $product['product_id'] ?>"><?php echo $product['product_name']; ?></a>
+                                    </h3>
+                                    <span><?php echo $product['price']; ?>$</span>
                                 </div>
-                            </div>
-                            <div class="popular-caption">
-                                <h3><a
-                                        href="product_details.php?id=<?php echo $product['product_id']?>"><?php echo $product['product_name']; ?></a>
-                                </h3>
-                                <span><?php echo $product['price']; ?>$</span>
                             </div>
                         </div>
-                    </div>
-                    <?php }?>
+                    <?php } ?>
                 </div>
                 <!-- Button -->
                 <div class="row justify-content-center">
@@ -291,8 +312,7 @@ $sql = "SELECT * FROM product ORDER BY product_id DESC LIMIT 3";
                 <div class="row align-items-center">
                     <div class="col-lg-12">
                         <div class="video-wrap">
-                            <div class="play-btn "><a class="popup-video"
-                                    href="https://www.youtube.com/watch?v=KMc6DyEJp04"><i class="fas fa-play"></i></a>
+                            <div class="play-btn "><a class="popup-video" href="https://www.youtube.com/watch?v=KMc6DyEJp04"><i class="fas fa-play"></i></a>
                             </div>
                         </div>
                     </div>
@@ -443,10 +463,8 @@ $sql = "SELECT * FROM product ORDER BY product_id DESC LIMIT 3";
                             <p>
                                 <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                                 Copyright &copy;<script>
-                                document.write(new Date().getFullYear());
-                                </script> All rights reserved | This template is made with <i class="fa fa-heart"
-                                    aria-hidden="true"></i> by <a href="https://colorlib.com"
-                                    target="_blank">Colorlib</a>
+                                    document.write(new Date().getFullYear());
+                                </script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
                                 <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                             </p>
                         </div>
@@ -514,16 +532,26 @@ $sql = "SELECT * FROM product ORDER BY product_id DESC LIMIT 3";
     <script src="assets/js/main.js"></script>
 
     <script>
-    window.addEventListener('load', (event) => {
-        const avatar = localStorage.getItem("avatar")
-        if (avatar === 'isLogin-true') {
-            document.getElementsByClassName("logo-islogin-false")[0].style.display = "none"
-            document.getElementsByClassName("logo-islogin-true")[0].style.display = "block"
-        } else {
-            document.getElementsByClassName("logo-islogin-false")[0].style.display = "block"
-            document.getElementsByClassName("logo-islogin-true")[0].style.display = "none"
-        }
-    });
+        window.addEventListener('load', (event) => {
+            const avatar = localStorage.getItem("avatar")
+            if (avatar === 'isLogin-true') {
+                document.getElementsByClassName("logo-islogin-false")[0].style.display = "none"
+                document.getElementsByClassName("logo-islogin-true")[0].style.display = "block"
+            } else {
+                document.getElementsByClassName("logo-islogin-false")[0].style.display = "block"
+                document.getElementsByClassName("logo-islogin-true")[0].style.display = "none"
+            }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchIcon = document.querySelector('.nav-search .flaticon-search');
+            const searchInput = document.querySelector('.nav-search input[type="text"]');
+
+            searchIcon.addEventListener('click', function() {
+                searchInput.classList.toggle('active');
+            });
+        });
     </script>
 
 

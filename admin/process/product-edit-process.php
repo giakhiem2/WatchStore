@@ -1,9 +1,9 @@
 <?php
 require_once('../../db/dbhelper.php');
-//if ( isset($_POST['product_id']) && isset($_POST['lib_image']) && isset($_POST['product_name']) && isset($_POST['quantity']) && isset($_POST['category']) && isset($_POST['price'])
-// && isset($_POST['pro_paramater']) && isset($_POST['brand']) && isset($_POST['machine_series']) && isset($_POST['rope_material']) && isset($_POST['shell_material']) && isset($_POST['glass_material'])
-//&& isset($_POST['face_size']) && isset($_POST['origin']) && isset($_POST['shape']) && isset($_POST['color']) && isset($_POST['face_color']) && isset($_POST['style'])
-//&& isset($_POST['created_at']) && isset($_POST['edited_at']) && isset($_POST['deleted_at'])) {
+if ( isset($_POST['product_id'])  && isset($_POST['product_name']) && isset($_POST['quantity']) && isset($_POST['category']) && isset($_POST['price'])
+ && isset($_POST['pro_paramater'])  && isset($_POST['machine_series']) && isset($_POST['rope_material']) && isset($_POST['shell_material']) && isset($_POST['glass_material'])
+&& isset($_POST['face_size']) && isset($_POST['origin']) && isset($_POST['shape']) && isset($_POST['color']) && isset($_POST['face_color']) && isset($_POST['style'])
+&& isset($_POST['created_at']) && isset($_POST['edited_at']) && isset($_POST['deleted_at'])) {
 
 $product_id = $_POST['product_id'];
 
@@ -12,7 +12,7 @@ $quantity = $_POST['quantity'];
 $category_id = $_POST['category'];
 $price = $_POST['price'];
 $pro_paramater = $_POST['pro_paramater'];
-$brand = $_POST['brand'];
+
 $machine_series = $_POST['machine_series'];
 $rope_material = $_POST['rope_material'];
 $shell_material = $_POST['shell_material'];
@@ -29,11 +29,14 @@ $deleted_at = $_POST['deleted_at'];
 
 // Kiểm tra xem có tệp hình ảnh mới được chọn không
 if (!empty($_FILES["image"]["name"])) {
+    // Xóa hình ảnh hiện có
+    unlink($_POST['existing_image']);
+    // Tiếp tục xử lý tải lên hình ảnh mới như trong mã gốc của bạn
+
     $target_dir = "../../image/";
     $target_file = $target_dir . basename($_FILES["image"]["name"]);
     $upload_ok = 1;
     $image_file_type = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
 
     // Kiểm tra định dạng tệp hình ảnh
     if ($image_file_type != "jpg" && $image_file_type != "png" && $image_file_type != "jpeg" && $image_file_type != "gif") {
@@ -43,7 +46,7 @@ if (!empty($_FILES["image"]["name"])) {
 
     // Kiểm tra trùng tên tệp hình ảnh
     if (file_exists($target_file)) {
-        echo 'The file category_id already exits. Please change your file category_id!';
+        echo 'The file already exists. Please change your file!';
         $upload_ok = 0;
     }
 
@@ -53,12 +56,6 @@ if (!empty($_FILES["image"]["name"])) {
     }
 
     $image = '../image/' . $_FILES["image"]["name"];
-} // Kiểm tra xem có tệp hình ảnh mới được chọn không
-if (!empty($_FILES["image"]["name"])) {
-    // Xóa hình ảnh hiện có
-    unlink($_POST['existing_image']);
-
-    // Tiếp tục xử lý tải lên hình ảnh mới như trong mã gốc của bạn
 } else {
     // Không có tệp hình ảnh mới được chọn, giữ nguyên hình ảnh hiện có
     $image = $_POST['existing_image'];
@@ -68,7 +65,7 @@ if (!empty($_FILES["image"]["name"])) {
 
 
 $sql = "UPDATE product SET image = '$image',product_name = '$product_name',quantity = '$quantity',
-    category_id = '$category_id',price = '$price',pro_paramater = '$pro_paramater',brand = '$brand', machine_series = '$machine_series'
+    category_id = '$category_id',price = '$price',pro_paramater = '$pro_paramater', machine_series = '$machine_series'
     ,rope_material = '$rope_material',shell_material = '$shell_material',glass_material = '$glass_material',face_size = '$face_size'
     ,origin = '$origin',shape = '$shape',color = '$color', face_color = '$face_color',style = '$style'
     ,created_at = '$created_at',edited_at = '$edited_at',deleted_at = '$deleted_at' WHERE product_id = '$product_id'";
@@ -82,8 +79,10 @@ if (isset($_FILES['images'])) {
     $target_dir = "../../img_products/";
     if ($upload_ok == 1 && isset($product_id)) {
 
-        if (!empty($_FILES["images"]["name"])) {
+        if (!empty($_FILES["images"]["name"][0])) {
+            
             foreach ($_FILES["images"]["tmp_name"] as $key => $tmp_name) {
+                
                 $image_name = $_FILES["images"]["name"][$key];
                 $target_file = $target_dir . basename($image_name);
                 $target_file_type = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
@@ -108,12 +107,16 @@ if (isset($_FILES['images'])) {
                         echo 'Upload successfully!';
     
                         // Thêm thông tin hình ảnh vào bảng img_products
-                        mysqli_query($con, "UPDATE img_products SET image = '$target_file' WHERE product_id = '$product_id'");
+                        mysqli_query($con, "INSERT INTO img_products (product_id, image) VALUES ('$product_id', '$target_file')");
+                    } else {
+                        echo 'Failed to upload the file!';
+                        continue;
                     }
                 }
             }
         }
     }
 }
-    //header('Location: ../product.php');
-//}
+
+    header('Location: ../product.php');
+}

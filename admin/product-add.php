@@ -28,7 +28,9 @@ $currentDateTime = date('Y-m-d H:i:s');
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:100,200,300,400,500,600,700,800,900" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-
+    
+    <!-- Angular JS -->
+    
     <!-- Font Awesome-->
     <link rel="stylesheet" type="text/css" href="../assets/css/font-awesome.css">
 
@@ -43,6 +45,11 @@ $currentDateTime = date('Y-m-d H:i:s');
 
     <!-- App css-->
     <link rel="stylesheet" type="text/css" href="../assets/css/admin.css">
+    <style>
+        .invalid{
+            color: red;
+        }
+    </style>
 </head>
 
 <body>
@@ -65,25 +72,29 @@ $currentDateTime = date('Y-m-d H:i:s');
             <div class="page-body">
             <input type="hidden" name="product_id" value="<?php echo $product_id; ?>">
 
-                <form action="process/product-add-process.php" method="post" enctype="multipart/form-data">
+                <form action="process/product-add-process.php" method="post" enctype="multipart/form-data" id="form-1" onsubmit="Validator()">
                     <div class="form-group">
                         <label for="image">Avatar</label>
                         <input type="file"  class="form-control" id="image" name="image"> <!-- image[] -->
+                        <span class="form-message"></span>
                     </div>
                     <div class="form-group">
-                        <label for="image">LibraryImage</label>
+                        <label for="images">LibraryImage</label>
                         <input type="file"  class="form-control" id="images" name="images[]" multiple > <!-- image[] -->
+                        <span class="form-message"></span>
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Name Product</label>
+                        <label for="product_name">Name Product</label>
                         <input type="text" class="form-control" name="product_name" id="product_name">
+                        <span class="form-message"></span>
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Quantity</label>
+                        <label for="quantity">Quantity</label>
                         <input type="number" class="form-control" name="quantity" id="quantity">
+                        <span class="form-message"></span>
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Danh mục</label>
+                        <label for="category">Danh mục</label>
                         <select class="form-control" name="category">
                             <?php
                             if ($categorys != null) {
@@ -97,69 +108,67 @@ $currentDateTime = date('Y-m-d H:i:s');
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Price</label>
+                        <label for="price">Price</label>
                         <input type="number" class="form-control" name="price" id="price">
+                        <span class="form-message"></span>
                     </div>
-                    <div class="form-group">
-                        <label for="exampleInputPassword1">Pro paramater</label>
+                    <div class="pro_paramater">
+                        <label for="pro_paramater">Pro paramater</label>
                         <input type="text" class="form-control" name="pro_paramater" id="pro_paramater">
+                        <span class="form-message"></span>
                     </div>
+                    
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Brand</label>
-                        <input type="text" class="form-control" name="brand" id="brand">
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputPassword1">Machine Series</label>
+                        <label for="machine_series">Machine Series</label>
                         <input type="text" class="form-control" name="machine_series" id="machine_series">
+                        <span class="form-message"></span>
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Rope Material</label>
+                        <label for="rope_material">Rope Material</label>
                         <input type="text" class="form-control" name="rope_material" id="rope_material">
+                        <span class="form-message"></span>
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Shell Material</label>
+                        <label for="shell_material">Shell Material</label>
                         <input type="text" class="form-control" name="shell_material" id="shell_material">
+                        <span class="form-message"></span>
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Glass Material</label>
+                        <label for="glass_material">Glass Material</label>
                         <input type="text" class="form-control" name="glass_material" id="glass_material">
+                        <span class="form-message"></span>
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Face Size</label>
+                        <label for="face_size">Face Size</label>
                         <input type="text" class="form-control" name="face_size" id="face_size">
+                        <span class="form-message"></span>
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Origin</label>
+                        <label for="origin">Origin</label>
                         <input type="text" class="form-control" name="origin" id="origin">
+                        <span class="form-message"></span>
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Shape</label>
+                        <label for="shape">Shape</label>
                         <input type="text" class="form-control" name="shape" id="shape">
+                        <span class="form-message"></span>
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Color</label>
+                        <label for="color">Color</label>
                         <input type="text" class="form-control" name="color" id="color">
+                        <span class="form-message"></span>
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Face Color</label>
+                        <label for="face_color">Face Color</label>
                         <input type="text" class="form-control" name="face_color" id="face_color">
+                        <span class="form-message"></span>
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Style</label>
+                        <label for="style">Style</label>
                         <input type="text" class="form-control" name="style" id="style">
+                        <span class="form-message"></span>
                     </div>
-                    <div class="form-group">
-                        <label for="exampleInputPassword1">Created At</label>
-                        <input type="datetime" class="form-control" name="created_at" id="created_at">
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputPassword1">Updated At</label>
-                        <input type="datetime" class="form-control" name="edited_at" id="edited_at">
-                    </div>
-                    <div class="form-group">
-                        <label for="exampleInputPassword1">Deleted At</label>
-                        <input type="datetime" class="form-control" name="deleted_at" id="deleted_at">
-                    </div>
+                   
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
 
@@ -211,7 +220,35 @@ $currentDateTime = date('Y-m-d H:i:s');
 
     <!--script admin-->
     <script src="../assets/js/admin-script.js"></script>
-
+    <script src="js/validation.js"></script>
+    <script>
+        Validator({
+            form: '#form-1',
+            errorSelector: '.form-message',
+            rules: [
+                Validator.isRequired('#image'),
+                Validator.isRequired('#images'),
+                Validator.isRequired('#product_name'),
+                Validator.minLength('#product_name', 6),
+                Validator.isRequired('#quantity'),
+                Validator.positiveNumber('#quantity'),
+                Validator.isRequired('#price'),
+                Validator.positiveNumber('#price'),
+                Validator.isRequired('#pro_paramater'),
+                Validator.isRequired('#machine_series'),
+                Validator.isRequired('#rope_material'),
+                Validator.isRequired('#shell_material'),
+                Validator.isRequired('#glass_material'),
+                Validator.isRequired('#face_size'),
+                Validator.isRequired('#origin'),
+                Validator.isRequired('#shape'),
+                Validator.isRequired('#color'),
+                Validator.isRequired('#face_color'),
+                Validator.isRequired('#style'),
+                
+            ]
+        });
+    </script>
 </body>
 
 </html>

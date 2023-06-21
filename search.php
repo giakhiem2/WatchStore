@@ -1,12 +1,30 @@
 <?php
 require_once('db/dbhelper.php');
-$sql = 'SELECT * from category ORDER BY category_id DESC';
-$categorys = executeResult($sql);
-if (isset($_GET['id'])) {
-    $category_id = $_GET['id'];
-    $sql = "SELECT * FROM category JOIN product ON product.category_id = category.category_id WHERE category.category_id = $category_id ORDER BY category.category_id DESC";
+if (isset($_GET['keyword'])) {
+    $keyword = $_GET['keyword'];
+
+    // Thực hiện truy vấn tất cả các sản phẩm
+    $sql = "SELECT * FROM product";
     $products = executeResult($sql);
+
+    $results = array();
+
+    // Duyệt qua từng sản phẩm trong danh sách $products
+    foreach ($products as $product) {
+        $similarity = 0;
+        similar_text($product['product_name'], $keyword, $similarity);
+        $results[] = array(
+            'product' => $product,
+            'similarity' => $similarity
+        );
+    }
+
+    // Sắp xếp mảng kết quả theo độ tương đồng giảm dần
+    usort($results, function ($a, $b) {
+        return $b['similarity'] - $a['similarity'];
+    });
 }
+
 ?>
 
 <!doctype html>
@@ -34,7 +52,47 @@ if (isset($_GET['id'])) {
     <link rel="stylesheet" href="assets/css/nice-select.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-    .nav-search {
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f2f2f2;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .filter-group {
+            margin-right: 10px;
+        }
+
+        .filter-select {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 3px;
+            background-color: #4CAF50;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background-color: #45a049;
+        }
+
+        .filter-btn+.filter-btn {
+            margin-left: 5px;
+        }
+
+        .row {
+            padding-top: 100px;
+        }
+        .nav-search {
         position: relative;
     }
 
@@ -57,7 +115,8 @@ if (isset($_GET['id'])) {
         width: 200px;
         opacity: 1;
     }
-</style>
+    </style>
+
 </head>
 
 <body>
@@ -159,72 +218,70 @@ if (isset($_GET['id'])) {
         <!-- Latest Products Start -->
         <section class="popular-items latest-padding">
             <div class="container">
-                <div class="row product-btn justify-content-between mb-40">
-                    <div class="properties__button">
-                        <nav>
-                            <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                <?php
-                                $defaultCategory = null;
-                                usort($categorys, function($a, $b) {
-                                    return $a['category_id'] - $b['category_id'];
-                                });
-                                if ($categorys != null) {
-                                    foreach ($categorys as $key => $cate) {
-                                        if ($key === 0) {
-                                            $defaultCategory = $cate['category_id'];
-                                        }
-                                ?>
-                                        <a class="nav-item nav-link<?php echo ($key === 0) ? ' active' : ''; ?>" data-toggle="tab" href="#category-<?php echo $cate['category_id']; ?>"><?php echo $cate['category_name']; ?></a>
 
-                                <?php
-                                    }
-                                }
-                                ?>
-                            </div>
-                        </nav>
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <label for="category">Danh mục:</label>
+                        <select id="category" class="filter-select">
+                            <option value="">Tất cả</option>
+                            <option value="1">Sản phẩm 1</option>
+                            <option value="2">Sản phẩm 2</option>
+                            <option value="3">Sản phẩm 3</option>
+                            <!-- Thêm các tùy chọn danh mục khác nếu cần -->
+                        </select>
                     </div>
+                    <div class="filter-group">
+                        <label for="price">Giá:</label>
+                        <select id="price" class="filter-select">
+                            <option value="">Tất cả</option>
+                            <option value="low">Giá thấp</option>
+                            <option value="medium">Giá trung bình</option>
+                            <option value="high">Giá cao</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <button id="filter-btn" class="filter-btn">Lọc</button>
+                        <button id="reset-btn" class="filter-btn">Đặt lại</button>
+                    </div>
+
                 </div>
                 <!-- Grid and List view -->
                 <div class="grid-list-view">
                     <!-- Select items -->
                     <!-- Nav Card -->
                     <div class="tab-content" id="nav-tabContent">
-                        <?php
-                        if ($categorys != null) {
-                            foreach ($categorys as $key => $cate) {
-                                $category_id = $cate['category_id'];
-                                $sql = "SELECT * FROM product WHERE category_id = $category_id";
-                                $products = executeResult($sql);
-                        ?>
-                                <div class="tab-pane fade<?php echo ($key === 0) ? ' show active' : ''; ?>" id="category-<?php echo $cate['category_id']; ?>" role="tabpanel">
-                                    <div class="grid-list-view">
-                                        <div class="row">
-                                            <?php foreach ($products as $product) { ?>
-                                                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                    <div class="single-popular-items mb-50 text-center">
-                                                        <div class="popular-img">
-                                                            <img src="image/<?php echo $product['image']; ?>" alt="">
-                                                            <div class="img-cap">
-                                                            <span><a href="cart.php?product=<?php echo urlencode(json_encode($product)); ?>&quantity=1">Add to Cart</a></span></span>
-                                                            </div>
-                                                            <div class="favorit-items">
-                                                                <span class="flaticon-heart"></span>
-                                                            </div>
+                        <div class="tab-pane fade show active"  role="tabpanel">
+                            <div class="grid-list-view">
+                                <div class="row">
+                                    <?php
+                                    // Hiển thị các sản phẩm tương tự
+                                    foreach ($results as $result) {
+                                        $product = $result['product'];
+                                    ?>
+                                      
+                                            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                                <div class="single-popular-items mb-50 text-center">
+                                                    <div class="popular-img">
+                                                        <img src="image/<?php echo $product['image']; ?>" alt="">
+                                                        <div class="img-cap">
+                                                            <span><a href="cart.php?product=<?php echo urlencode(json_encode($product)); ?>&quantity=1">Add to Cart</a></span>
                                                         </div>
-                                                        <div class="popular-caption">
-                                                            <h3><a href="product_details.php?id=<?php echo $product['product_id']?>"><?php echo $product['product_name']; ?></a></h3>
-                                                            <span><?php echo $product['price']; ?>$</span>
+                                                        <div class="favorit-items">
+                                                            <span class="flaticon-heart"></span>
                                                         </div>
                                                     </div>
+                                                    <div class="popular-caption">
+                                                        <h3><a href="product_details.php?id=<?php echo $product['product_id'] ?>"><?php echo $product['product_name']; ?></a></h3>
+                                                        <span><?php echo $product['price']; ?>$</span>
+                                                    </div>
                                                 </div>
+                                            </div>
                                             <?php } ?>
-                                        </div>
-                                    </div>
+                                        
                                 </div>
-                        <?php
-                            }
-                        }
-                        ?>
+                           
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

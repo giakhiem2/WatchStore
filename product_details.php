@@ -32,6 +32,31 @@ if (isset($_GET['id'])) {
     <link rel="stylesheet" href="assets/css/slick.css">
     <link rel="stylesheet" href="assets/css/nice-select.css">
     <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+    .nav-search {
+        position: relative;
+    }
+
+    .nav-search input[type="text"] {
+        width: 0;
+        opacity: 0;
+        transition: width 0.5s ease, opacity 0.5s ease;
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 5px;
+        border-radius: 5px;
+    }
+
+    .nav-search .flaticon-search {
+        cursor: pointer;
+    }
+
+    .nav-search:hover input[type="text"] {
+        width: 200px;
+        opacity: 1;
+    }
+</style>
 
 </head>
 
@@ -83,9 +108,12 @@ if (isset($_GET['id'])) {
                         <!-- Header Right -->
                         <div class="header-right">
                             <ul>
-                                <li>
-                                    <div class="nav-search search-switch">
-                                        <span class="flaticon-search"></span>
+                            <li>
+                                    <div class="nav-search">
+                                        <form id="search-form" action="search.php" method="GET">
+                                            <span class="flaticon-search"></span>
+                                            <input type="text" id="search-input" name="keyword" placeholder="Tìm kiếm sản phẩm">
+                                        </form>
                                     </div>
                                 </li>
                                 <li> <a href="login.php"><span class="flaticon-user"></span></a></li>
@@ -149,12 +177,7 @@ if (isset($_GET['id'])) {
                                 </div>
 
                             </div>
-                            <div class="grid grid-cols-12 my-4 ">
-                                <div class="col-span-4">
-                                    <p class="text-xl font-semibold">Brand: <?php echo $products['brand']; ?></p>
-                                </div>
-
-                            </div>
+                            
                             <div class="grid grid-cols-12 my-4 ">
                                 <div class="col-span-4">
                                     <p class="text-xl font-semibold">Machine Series: <?php echo $products['machine_series']; ?></p>

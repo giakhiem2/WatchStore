@@ -1,10 +1,8 @@
 <?php
 require_once('../db/dbhelper.php');
-$sql = "SELECT product.*, category.category_name 
-FROM product
-LEFT JOIN category ON product.category_id = category.category_id
-ORDER BY product.product_id DESC";
-$products = executeResult($sql);
+$sql = "SELECT * FROM coupon";
+$coupons = executeResult($sql);
+
 
 ?>
 
@@ -18,10 +16,8 @@ $products = executeResult($sql);
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description"
-        content="Bigdeal admin is super flexible, powerful, clean &amp; modern responsive bootstrap 4 admin template with unlimited possibilities.">
-    <meta name="keywords"
-        content="admin template, Bigdeal admin template, dashboard template, flat admin template, responsive admin template, web app">
+    <meta name="description" content="Bigdeal admin is super flexible, powerful, clean &amp; modern responsive bootstrap 4 admin template with unlimited possibilities.">
+    <meta name="keywords" content="admin template, Bigdeal admin template, dashboard template, flat admin template, responsive admin template, web app">
     <meta name="author" content="pixelstrap">
     <link rel="icon" href="../assets/images/favicon/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="../assets/images/favicon/favicon.png" type="image/x-icon">
@@ -29,9 +25,7 @@ $products = executeResult($sql);
 
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:100,200,300,400,500,600,700,800,900" rel="stylesheet">
-    <link
-        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
 
     <!-- Font Awesome-->
     <link rel="stylesheet" type="text/css" href="../assets/css/font-awesome.css">
@@ -69,7 +63,7 @@ $products = executeResult($sql);
             <div class="page-body">
 
                 <!-- Container-fluid starts-->
-               
+
                 <!-- Container-fluid Ends-->
 
                 <!-- Container-fluid starts-->
@@ -78,56 +72,54 @@ $products = executeResult($sql);
                         <div class="col-sm-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5>Products Category</h5>
+                                    <h5>Coupon Category</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="btn-popup pull-right">
-                                        <a href="product-add.php">
-                                            <button type="button" class="btn btn-primary">Add Product</button>
-                                        </a>                
+                                        <a href="coupon-add.php">
+                                            <button type="button" class="btn btn-primary">Add Coupon</button>
+                                        </a>
                                     </div>
                                     <div class="table-responsive">
                                         <div class="product-physical">
                                             <table class="table">
                                                 <thead>
-                                                    <tr>                                                   
-                                                         <th scope="col">Product ID</th>
-                                                         <th scope="col">Image</th>
-                                                        <th scope="col">Product Name</th>
+                                                    <tr>
+                                                        <th scope="col">Coupon ID</th>
+                                                        <th scope="col">CouponCode</th>
+                                                        <th scope="col">Discount</th>
                                                         <th scope="col">Quantity</th>
-                                                        <th scope="col">Category</th>
-                                                        
+                                                        <th scope="col">Status</th>
+
+
                                                         <th scope="col">Action</th>
-                                                                                                            
+
                                                     </tr>
                                                 </thead>
                                                 <tbody>
                                                     <?php
-                                                    if($products != null){
-                                                        foreach($products as $prod){
+                                                    if ($coupons != null) {
+                                                        foreach ($coupons as $cp) {
                                                     ?>
-                                                    <tr>
-                                                       
-                                                        <td><?php echo $prod['product_id']; ?></td>
-                                                        <td scope="row">         
-                                                            <img src="<?php echo $prod['image']; ?>" width="50px" 
-                                                            height="50px" style="border-radius:50px;" alt="">
-                                                        </td>
-                                                        <td><?php echo $prod['product_name']; ?></td>
-                                                        <td><?php echo $prod['quantity']; ?></td>
-                                                        <td><?php echo $prod['category_name'];?></td>
-                                                        
-                                                                                                            
-                                                        <td>
-                                                            <a href="product-edit.php?product_id=<?php echo $prod['product_id'];?>" class="btn btn-sm btn-outline-info">Edit</a>
-                                                            <a onclick="return confirm('Do you want to delete this product ?');"
-                                                                href="process/product-delete-process.php?product_id=<?php echo $prod['product_id'];?>"
-                                                                class="btn btn-sm btn-outline-danger">delete</a>
-                                                        </td>
-                                                        
+                                                            <tr>
 
-                                                    </tr> 
-                                                    <?php } }?>                             
+                                                                <td><?php echo $cp['coupon_id']; ?></td>
+
+                                                                <td><?php echo $cp['coupon_code']; ?></td>
+                                                                <td><?php echo $cp['discount']; ?></td>
+                                                                <td><?php echo $cp['quantity']; ?></td>
+                                                                <td class="status" data-coupon-id="<?php echo $cp['coupon_id']; ?>"></td>
+
+
+                                                                <td>
+                                                                    <a href="product-edit.php?product_id=<?php echo $prod['product_id']; ?>" class="btn btn-sm btn-outline-info">Edit</a>
+                                                                    <a onclick="return confirm('Do you want to delete this product ?');" href="process/product-delete-process.php?product_id=<?php echo $prod['product_id']; ?>" class="btn btn-sm btn-outline-danger">delete</a>
+                                                                </td>
+
+
+                                                            </tr>
+                                                    <?php }
+                                                    } ?>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -187,6 +179,31 @@ $products = executeResult($sql);
 
     <!--script admin-->
     <script src="../assets/js/admin-script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        updateCouponStatus();
+
+        function updateCouponStatus() {
+            $('.status').each(function() {
+                var couponId = $(this).data('coupon-id');
+                $.ajax({
+                    url: 'process/check_coupon_status.php',
+                    method: 'POST',
+                    data: {
+                        coupon_id: couponId
+                    },
+                    success: function(response) {
+                        $(this).text(response);
+                    }.bind(this)
+                });
+            });
+        }
+
+        // Cập nhật trạng thái mã giảm giá sau một khoảng thời gian nhất định
+        setInterval(updateCouponStatus, 5000); // Cập nhật mỗi 5 giây (5000 milliseconds)
+    });
+</script>
 
 </body>
 

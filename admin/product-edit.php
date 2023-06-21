@@ -2,6 +2,8 @@
 require_once('../db/dbhelper.php');
 $sql = 'select * from category';
 $categorys = executeResult($sql);
+$sql = 'select * from product';
+$product = executeResult($sql);
 date_default_timezone_set('UTC');
 $currentDateTime = date('Y-m-d H:i:s');
 
@@ -17,7 +19,7 @@ if (isset($_GET['product_id'])) {
     $quantity = $products['quantity'];
     $price = $products['price'];
     $pro_paramater = $products['pro_paramater'];
-    $brand = $products['brand'];
+
     $machine_series = $products['machine_series'];
     $rope_material = $products['rope_material'];
     $shell_material = $products['shell_material'];
@@ -33,7 +35,6 @@ if (isset($_GET['product_id'])) {
     $deleted_at = $products['deleted_at'];
     $sql = "SELECT * FROM img_products WHERE product_id = '$_GET[product_id]'";
     $images = executeResult($sql);
-    
 }
 
 ?>
@@ -122,7 +123,7 @@ if (isset($_GET['product_id'])) {
                         </div>
 
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" name="category">
                         <label for="exampleInputPassword1">Name Product</label>
                         <input type="text" class="form-control" name="product_name" id="product_name" value="<?php echo $product_name ?>">
                     </div>
@@ -131,15 +132,12 @@ if (isset($_GET['product_id'])) {
                         <input type="number" class="form-control" name="quantity" id="quantity" value="<?php echo $quantity ?>">
                     </div>
                     <div class="form-group">
-                        <label for="exampleInputPassword1">Danh mục</label>
+                        <label for="exampleInputPassword1">Category</label>
                         <select class="form-control" name="category">
                             <?php
-                            if ($categorys != null) {
-                                foreach ($categorys as $cate) {
-                            ?>
-                                    <option value="<?php echo $cate['category_id'] ?>"><?php echo $cate['category_name'] ?></option>
-                            <?php
-                                }
+                            foreach ($categorys as $category) {
+                                $selected = ($category['category_id'] == $products['category_id']) ? 'selected' : '';
+                                echo '<option value="' . $category['category_id'] . '" ' . $selected . '>' . $category['category_name'] . '</option>';
                             }
                             ?>
                         </select>
@@ -152,10 +150,7 @@ if (isset($_GET['product_id'])) {
                         <label for="exampleInputPassword1">Pro paramater</label>
                         <input type="text" class="form-control" name="pro_paramater" id="pro_paramater" value="<?php echo $pro_paramater ?>">
                     </div>
-                    <div class="form-group">
-                        <label for="exampleInputPassword1">Brand</label>
-                        <input type="text" class="form-control" name="brand" id="brand" value="<?php echo $brand ?>">
-                    </div>
+
                     <div class="form-group">
                         <label for="exampleInputPassword1">Machine Series</label>
                         <input type="text" class="form-control" name="machine_series" id="machine_series" value="<?php echo $machine_series ?>">

@@ -1,6 +1,6 @@
 <?php
 require_once('../../db/dbhelper.php');
-$image = $product_name = $quantity = $category = $price = $pro_paramater = $brand = $object
+$image = $product_name = $quantity = $category = $price = $pro_paramater  = $object
     = $machine_series = $rope_material = $shell_material = $glass_material = $face_size = $origin
     = $shape = $color = $face_color = $style = $created_at = $edited_at = $deleted_at = '';
     if (isset($_POST['product_id'])) {
@@ -21,9 +21,7 @@ if (isset($_POST['price'])) {
 if (isset($_POST['pro_paramater'])) {
     $pro_paramater = $_POST['pro_paramater'];
 }
-if (isset($_POST['brand'])) {
-    $brand = $_POST['brand'];
-}
+
 if (isset($_POST['object'])) {
     $object = $_POST['object'];
 }
@@ -107,10 +105,10 @@ if (isset($_FILES["image"])) {
 
 // Thực hiện câu truy vấn INSERT vào bảng product
 $sql = 'INSERT INTO product (image, product_name, quantity, category_id, price, pro_paramater, 
-brand, machine_series, rope_material, shell_material, glass_material, face_size, 
+ machine_series, rope_material, shell_material, glass_material, face_size, 
 origin, shape, color, face_color, style, created_at, edited_at, deleted_at) 
 VALUES ("' . $image . '", "' . $product_name . '", "' . $quantity . '", "' . $category . '", "' . $price . '", "' . $pro_paramater . '", 
-"' . $brand . '", "' . $machine_series . '", "' . $rope_material . '", "' . $shell_material . '", "' . $glass_material . '", "' . $face_size . '", 
+ "' . $machine_series . '", "' . $rope_material . '", "' . $shell_material . '", "' . $glass_material . '", "' . $face_size . '", 
 "' . $origin . '", "' . $shape . '", "' . $color . '", "' . $face_color . '", "' . $style . '", "' . $created_at . '", "' . $edited_at . '", "' . $deleted_at . '")';
 
 
