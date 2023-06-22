@@ -1,24 +1,7 @@
 <?php
 require_once('../db/dbhelper.php');
-$sql = "SELECT * FROM orders";
+$sql = "SELECT * FROM `order`";
 $orders = executeResult($sql);
-?>
-<?php
-if(isset($_GET['partnerCode'])){
-  $data_momo =[
-    'partnerCode' => $_GET['partnerCode'],
-    'orderId' => $_GET['orderId'],
-    'requestId' => $_GET['requestId'],
-    'amount' => $_GET['amount'],
-    'orderInfo' => $_GET['orderInfo'],
-    'orderType' => $_GET['orderType'],
-    'resultCode' => $_GET['resultCode'],
-    'message' => $_GET['message'],
-    'payType' => $_GET['payType'],
-    'responseTime' => $_GET['responseTime'],
-    'signature' => $_GET['signature']
-  ];
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -102,29 +85,29 @@ if(isset($_GET['partnerCode'])){
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php
-                                        if ($orders != null) {
-                                            foreach ($orders as $order) {
-                                                ?>
-                                                <tr>
-                                                    <td><?php echo $order['order_id']; ?></td>
-                                                    <td><?php echo $order['customer_name']; ?></td>
-                                                    <td><?php echo $order['email']; ?></td>
-                                                    <td><?php echo $order['phone_number']; ?></td>
-                                                    <td><?php echo $order['total_amount']; ?></td>
-                                                    <td><?php echo $order['order_date']; ?></td>
-                                                    <td><?php echo $order['status']; ?></td>
-                                                    <td><?php echo $order['delivery_address']; ?></td>
-                                                    <td>
-                                                        <a href="order-details.php?order_id=<?php echo $order['order_id']; ?>" class="btn btn-sm btn-outline-info">View Details</a>
-                                                        <a onclick="return confirm('Do you want to delete this order?');" href="process/order-delete-process.php?order_id=<?php echo $order['order_id']; ?>" class="btn btn-sm btn-outline-danger">Delete</a>
-                                                    </td>
-                                                </tr>
-                                            <?php
-                                            }
-                                        }
-                                        ?>
-                                    </tbody>
+    <?php
+    if ($orders != null) {
+        foreach ($orders as $order) {
+    ?>
+        <tr>
+            <td><?php echo $order['order_id']; ?></td>
+            <td><?php echo $order['customer_name']; ?></td>
+            <td><?php echo $order['email']; ?></td>
+            <td><?php echo $order['phone_number']; ?></td>
+            <td><?php echo $order['total_amount']; ?></td>
+            <td><?php echo $order['order_date']; ?></td>
+            <td><?php echo $order['status']; ?></td>
+            <td><?php echo $order['delivery_address']; ?></td>
+            <td>
+                <a href="order-details.php?order_id=<?php echo $order['order_id']; ?>" class="btn btn-sm btn-outline-info">View Details</a>
+                <a onclick="return confirm('Do you want to delete this order?');" href="process/order-delete-process.php?order_id=<?php echo $order['order_id']; ?>" class="btn btn-sm btn-outline-danger">Delete</a>
+            </td>
+        </tr>
+    <?php
+        }
+    }
+    ?>
+</tbody>
                                 </table>
                             </div>
                         </div>

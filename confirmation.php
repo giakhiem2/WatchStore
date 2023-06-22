@@ -1,4 +1,5 @@
 <?php
+require_once('../WatchStore/db/dbhelper.php');
 session_start();
 
 // Kiểm tra xem có thông tin giỏ hàng trong session hay không
@@ -10,6 +11,44 @@ if (isset($_SESSION['selectedProducts'])) {
   // Nếu không có thông tin giỏ hàng, chuyển hướng người dùng đến trang checkout
   header("Location: checkout.php");
   exit();
+}
+if (isset($_GET['partnerCode'])) {
+	$code_order = rand(0, 999);
+	$partnerCode = $_GET['partnerCode'];
+	$orderId = $_GET['orderId'];
+	$amount = $_GET['amount'];
+	$orderInfo = $_GET['orderInfo'];
+	$orderType = $_GET['orderType'];
+	$transId = $_GET['transId'];
+	$payType = $_GET['payType'];
+
+
+	$inset_momo = " insert into momo(partnerCode,orderId,amount,orderInfo,orderType,transId,payType,id) values ('" . $partnerCode . "','" . $orderId . "','" . $amount . "','" . $orderInfo . "'
+,'" . $orderType . "','" . $transId . "','" . $payType . "','" . $code_order . "')";
+
+	execute($inset_momo);
+
+
+	 if (isset($_SESSION['email'])) {
+	 	$eamil = $_SESSION['email'];
+		$sql1 = 'select * from cart where sh_id= "' . $eamil . '"';
+		$or_cart = executeResult($sql1);
+
+	 	foreach ($or_cart as $cart) {
+			$sh_id = $cart['sh_id'];
+			$size = $cart['size'];
+	 		$quantity = $cart['quantity'];
+	 		$pr_id = $cart['pr_id'];
+
+	 		$sql = 'insert into order_list(sh_id,pr_id,size,quantity,Time_Order) values ("' . $sh_id . '","' . $pr_id . '","' . $size . '","' . $quantity . '",now())';
+	 		execute($sql);
+
+	 		$update_quantity = 'UPDATE product_size SET quantity = quantity - ' . $quantity . ' WHERE pr_id = "' . $pr_id . '" AND size = "' . $size . '"';
+	 		execute($update_quantity);
+	 	}
+	 	$sql2 = 'delete from cart where sh_id="' . $eamil . '"';
+	 	execute($sql2);
+	 }
 }
 ?>
 <!doctype html>
@@ -101,15 +140,6 @@ if (isset($_SESSION['selectedProducts'])) {
                     <!-- Header Right -->
                     <div class="header-right">
                         <ul>
-<<<<<<< Updated upstream
-                            <li>
-                                <div class="nav-search search-switch">
-                                    <span class="flaticon-search"></span>
-                                </div>
-                            </li>
-                            <li> <a href="cart.php"><span class="flaticon-shopping-cart">+</span></a> </li>
-                            <li><a href="login.php"><span class="flaticon-user"></span></a></li>
-=======
                         <li>
                                     <div class="nav-search">
                                         <form id="search-form" action="search.php" method="GET">
@@ -120,7 +150,6 @@ if (isset($_SESSION['selectedProducts'])) {
                                 </li>
                             <li> <a href="login.php"><span class="flaticon-user"></span></a></li>
                             <li><a href="cart.php"><span class="flaticon-shopping-cart"></span></a> </li>
->>>>>>> Stashed changes
                         </ul>
                     </div>
                 </div>
@@ -153,13 +182,6 @@ if (isset($_SESSION['selectedProducts'])) {
 <!--================ confirmation part start =================-->
 <section class="confirmation_part section_padding">
   <div class="container">
-    <div class="row">
-      <div class="col-lg-12">
-        <div class="confirmation_tittle">
-          <span>Thank you. Your order has been received.</span>
-        </div>
-      </div>
-    </div>
     <div class="row">
       <div class="col-lg-12">
         <div class="order_details_iner">

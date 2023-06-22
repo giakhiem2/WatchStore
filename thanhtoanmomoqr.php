@@ -85,10 +85,13 @@ if (isset($jsonResult['payUrl'])) {
 
     // Chuyển hướng đến URL thanh toán của MoMo
     header('Location: ' . $payUrl);
+    exit(); // Đảm bảo kết thúc luồng chương trình
 } else {
     // Xử lý khi không nhận được URL thanh toán từ MoMo
-    // Ví dụ:
-    echo 'Không nhận được URL thanh toán từ MoMo';
+    // Chuyển hướng trở lại trang checkout
+    header('Location: checkout.php');
+    exit(); // Đảm bảo kết thúc luồng chương trình
 }
+
 ?>
 

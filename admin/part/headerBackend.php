@@ -1,3 +1,12 @@
+<?php
+require_once '.././db/dbhelper.php';
+$role = executeSingleResult("SELECT * FROM admin")['role'];
+if($role == 1){
+    $name = "admin";
+}else{
+    $name = "staff";
+}
+?>
 <div class="page-main-header">
         <div class="main-header-left">
             <div class="logo-wrapper"><a href="index.php"><img class="blur-up lazyloaded" src="../assets/images/layout-2/logo/logo.png" alt=""></a></div>
@@ -101,10 +110,10 @@
                             <div class="dotted-animation"><span class="animate-circle"></span><span class="main-circle"></span></div>
                         </div>
                         <ul class="profile-dropdown onhover-show-div p-20 profile-dropdown-hover">
-                            <li><a href="javascript:void(0)">Profile<span class="pull-right"><i data-feather="user"></i></span></a></li>
+                            <li><a href="../profile-admin.php">Profile<span class="pull-right"><i data-feather="user"></i></span></a></li>
                             <li><a href="javascript:void(0)">Inbox<span class="pull-right"><i data-feather="mail"></i></span></a></li>
                             <li><a href="javascript:void(0)">Taskboard<span class="pull-right"><i data-feather="file-text"></i></span></a></li>
-                            <li><a href="javascript:void(0)">Settings<span class="pull-right"><i data-feather="settings"></i></span></a></li>
+                            <li><a href="../../logout.php">Logout<span class="pull-right"><i data-feather="settings"></i></span></a></li>
                         </ul>
                     </li>
                 </ul>

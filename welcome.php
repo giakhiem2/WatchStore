@@ -104,7 +104,11 @@
         echo "Email: <input type='email' name='email' class='form-control' value='" . $row['email'] . "' required><br>";
         echo "Phone: <input type='text' name='phone' class='form-control' value='" . $row['phone'] . "' required><br>";
         echo "Address: <input type='text' name='address' class='form-control' value='" . $row['address'] . "' required><br>";
-        echo "<a href='change-password-user.php'>Change Password</a>";
+        echo '<a href="change-password-user.php" style="display: block; text-align: center; margin-top: 10px" ">
+        <div class="btn_3" style="width: 100%; margin-top: 40px">
+    Change password</div>
+    
+        </a>';
         echo '<div class="creat_account d-flex align-items-center"></div>';
         echo '<button type="submit" value="submit" class="btn_3" style="width: 100%; margin-top: 40px">
     Update</button>';

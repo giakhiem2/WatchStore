@@ -1,7 +1,7 @@
 <?php
 require_once('../db/dbhelper.php');
-$sql = "SELECT * FROM `cart`";
-$carts = executeResult($sql);
+$sql = "SELECT * FROM `orders`";
+$orderss = executeResult($sql);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -64,43 +64,59 @@ $carts = executeResult($sql);
         <div class="row">
             <div class="col-sm-12">
                 <div class="card">
-                <div class="order-list">
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">cart ID</th>
-                <th scope="col">userid</th>
-                <th scope="col">productid</th>
-                <th scope="col">quantity</th>
-                <th scope="col">price</th>
-                <th scope="col">created_at</th>
-                <th scope="col">updated_at</th>
-                <th scope="col">order ID</th> <!-- Thêm cột hiển thị order ID -->
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            if ($carts != null) {
-                foreach ($carts as $cart) {
-            ?>
-                    <tr>
-                        <td><?php echo $cart['cartid']; ?></td>
-                        <td><?php echo $cart['userid']; ?></td>
-                        <td><?php echo $cart['productid']; ?></td>
-                        <td><?php echo $cart['quantity']; ?></td>
-                        <td><?php echo $cart['price']; ?></td>
-                        <td><?php echo $cart['created_at']; ?></td>
-                        <td><?php echo $cart['updated_at']; ?></td>
-                        <td><?php echo $cart['order_id']; ?></td> <!-- Hiển thị order ID -->
-                    </tr>
-            <?php
-                }
-            }
-            ?>
-        </tbody>
-    </table>
-</div>
-
+                    <div class="card-header">
+                        <h5>Orders</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <div class="order-list">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Order ID</th>
+                                            <th scope="col">Customer Name</th>
+                                            <th scope="col">Email</th>
+                                            <th scope="col">Phone Number</th>
+                                            <th scope="col">Total Amount</th>
+                                            <th scope="col">Order Date</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Action</th>
+                                            <th scope="col">Delivery Address</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+    <?php
+    if ($orderss != null) {
+        foreach ($orderss as $orders) {
+    ?>
+        <tr>
+            <td><?php echo $order['order_id']; ?></td>
+            <td><?php echo $order['customer_name']; ?></td>
+            <td><?php echo $order['email']; ?></td>
+            <td><?php echo $order['phone_number']; ?></td>
+            <td><?php echo $order['total_amount']; ?></td>
+            <td><?php echo $order['order_date']; ?></td>
+            <td><?php echo $order['status']; ?></td>
+            <td><?php echo $order['delivery_address']; ?></td>
+            <td>
+                <a href="order-details.php?order_id=<?php echo $orders['order_id']; ?>" class="btn btn-sm btn-outline-info">View Details</a>
+                <a onclick="return confirm('Do you want to delete this order?');" href="process/order-delete-process.php?order_id=<?php echo $orders['order_id']; ?>" class="btn btn-sm btn-outline-danger">Delete</a>
+            </td>
+        </tr>
+    <?php
+        }
+    }
+    ?>
+</tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Container-fluid Ends-->
     <script src="../assets/js/jquery-3.3.1.min.js"></script>
 
