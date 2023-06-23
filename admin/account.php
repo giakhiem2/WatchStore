@@ -88,7 +88,6 @@ $admins = executeResult($sql);
                                                         <th scope="col">Admin ID</th>
                                                         <th scope="col">Image</th>
                                                         <th scope="col">Username</th>
-                                                        <th scope="col">Password</th>
                                                         <th scope="col">Acction</th>
 
 
@@ -108,7 +107,7 @@ $admins = executeResult($sql);
                                                                 height="50px" style="border-radius:50px;" alt="">
                                                         </td>
                                                         <td><?php echo $ad['username']; ?></td>
-                                                        <td><?php echo $ad['password']; ?></td>
+
 
 
                                                         <td>

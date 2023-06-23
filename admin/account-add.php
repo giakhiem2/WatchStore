@@ -26,7 +26,8 @@ $admins = executeResult($sql);
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
-
+    <!-- //hide password -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <!-- Font Awesome-->
     <link rel="stylesheet" type="text/css" href="../assets/css/font-awesome.css">
 
@@ -41,6 +42,21 @@ $admins = executeResult($sql);
 
     <!-- App css-->
     <link rel="stylesheet" type="text/css" href="../assets/css/admin.css">
+    <style>
+    /* hide passowrd */
+    .field-icon {
+        float: right;
+        margin-left: -25px;
+        margin-top: -25px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .container {
+        padding-top: 50px;
+        margin: auto;
+    }
+    </style>
 </head>
 
 <body>
@@ -73,7 +89,8 @@ $admins = executeResult($sql);
                     </div>
                     <div class="form-group">
                         <label for="exampleInputPassword1">Password</label>
-                        <input type="text" class="form-control" name="password" id="password">
+                        <input id="password-field" type="password" class="form-control" name="password"><span
+                            toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Submit</button>
@@ -127,7 +144,22 @@ $admins = executeResult($sql);
 
     <!--script admin-->
     <script src="../assets/js/admin-script.js"></script>
+    <script>
+    $(".toggle-password").click(function() {
 
+        $(this).toggleClass("fa-eye fa-eye-slash");
+        var input = $($(this).attr("toggle"));
+        if (input.attr("type") == "password") {
+            input.attr("type", "text");
+        } else {
+            input.attr("type", "password");
+        }
+    });
+
+    function onLogin() {
+        localStorage.setItem("avatar", "isLogin-true")
+    }
+    </script>
 </body>
 
 </html>

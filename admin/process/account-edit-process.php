@@ -47,7 +47,7 @@ if (isset($_POST['admin_id']) && isset($_POST['username']) && isset($_POST['pass
     }
 
 
-    $sql = 'UPDATE admin SET username = "' . $username . '", password = "' . $passwrod . '", image = "' . $image . '" WHERE admin_id = ' . $admin_id;
+    $sql = 'UPDATE admin SET username = "' . $username . '", password = "' . $password . '", image = "' . $image . '" WHERE admin_id = ' . $admin_id;
 
     execute($sql);
     header('Location: ../account.php');

@@ -7,6 +7,9 @@ if(isset($_POST['admin_id'])){
 if(isset($_POST['username'])){
     $username = $_POST['username'];
 }
+if(isset($_POST['password'])){
+    $password = $_POST['password'];
+}
 
 if(isset($_FILES["image"])){
     $target_dir = "../../image/"; 

@@ -32,7 +32,8 @@ if (isset($_GET['admin_id'])) {
     <link rel="icon" href="../assets/images/favicon/favicon.png" type="image/x-icon">
     <link rel="shortcut icon" href="../assets/images/favicon/favicon.png" type="image/x-icon">
     <title>Bigdeal - Premium Admin Template</title>
-
+    <!-- //hide password -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css?family=Work+Sans:100,200,300,400,500,600,700,800,900" rel="stylesheet">
     <link
@@ -53,6 +54,21 @@ if (isset($_GET['admin_id'])) {
 
     <!-- App css-->
     <link rel="stylesheet" type="text/css" href="../assets/css/admin.css">
+    <style>
+    /* hide passowrd */
+    .field-icon {
+        float: right;
+        margin-left: -25px;
+        margin-top: -25px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .container {
+        padding-top: 50px;
+        margin: auto;
+    }
+    </style>
 </head>
 
 <body>
@@ -73,26 +89,27 @@ if (isset($_GET['admin_id'])) {
             <!-- Page Sidebar Ends-->
 
             <div class="page-body">
-                <form action="process/account-edit-process.php" method="post" 
-                                        enctype="multipart/form-data">
+                <form action="process/account-edit-process.php" method="post" enctype="multipart/form-data">
                     <input type="text" value="<?php echo $admin_id ?>" name="admin_id" hidden>
                     <div class="form-group">
                         <label for="image">Image</label>
-                        <input type="file"  class="form-control" id="image" name="image">
-                        <img src="<?php echo $image?>" width="100px" height="100px" >
+                        <input type="file" class="form-control" id="image" name="image">
+                        <img src="<?php echo $image?>" width="100px" height="100px">
                         <input type="hidden" name="existing_image" value="<?php echo $image?>">
                     </div>
                     <div class="form-group">
                         <label for="exampleInputPassword1">UserName</label>
-                        <input type="text" class="form-control" name="username"  value="<?php echo $username?>">
+                        <input type="text" class="form-control" name="username" value="<?php echo $username?>">
                     </div>
                     <div class="form-group">
                         <label for="exampleInputPassword1">Password</label>
-                        <input type="text" class="form-control" name="password"  value="<?php echo $password?>">
+                        <input id="password-field" type="password" class="form-control" name="password"
+                            value="<?php echo $password?>"><span toggle="#password-field"
+                            class="fa fa-fw fa-eye field-icon toggle-password"></span>
                     </div>
-                    
-                                                          
-                   <button type="submit" class="btn btn-primary">Submit</button>
+
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
 
             </div>
@@ -143,7 +160,22 @@ if (isset($_GET['admin_id'])) {
 
     <!--script admin-->
     <script src="../assets/js/admin-script.js"></script>
+    <script>
+    $(".toggle-password").click(function() {
 
+        $(this).toggleClass("fa-eye fa-eye-slash");
+        var input = $($(this).attr("toggle"));
+        if (input.attr("type") == "password") {
+            input.attr("type", "text");
+        } else {
+            input.attr("type", "password");
+        }
+    });
+
+    function onLogin() {
+        localStorage.setItem("avatar", "isLogin-true")
+    }
+    </script>
 </body>
 
 </html>
