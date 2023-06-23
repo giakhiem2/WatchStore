@@ -1,34 +1,15 @@
 <?php
 require_once('db/dbhelper.php');
-if (isset($_GET['keyword'])) {
-    $keyword = $_GET['keyword'];
-
-    // Thực hiện truy vấn tất cả các sản phẩm
-    $sql = "SELECT * FROM product";
-    $products = executeResult($sql);
-
-    $results = array();
-
-    // Duyệt qua từng sản phẩm trong danh sách $products
-    foreach ($products as $product) {
-        $similarity = 0;
-        similar_text($product['product_name'], $keyword, $similarity);
-        $results[] = array(
-            'product' => $product,
-            'similarity' => $similarity
-        );
-    }
-
-    // Sắp xếp mảng kết quả theo độ tương đồng giảm dần
-    usort($results, function ($a, $b) {
-        return $b['similarity'] - $a['similarity'];
-    });
+if (isset($_GET['id'])) {
+    $product_id = $_GET['id'];
+    $sql = "SELECT * FROM product,category WHERE product.category_id=category.category_id AND product.product_id='$_GET[id]' LIMIT 1";
+    $products = executeSingleResult($sql);
+    $sql = "SELECT * FROM img_products WHERE product_id = '$_GET[id]'";
+    $images = executeResult($sql);
 }
-
 ?>
-
 <!doctype html>
-<html class="no-js" lang="zxx">
+<html lang="zxx">
 
 <head>
     <meta charset="utf-8">
@@ -52,87 +33,36 @@ if (isset($_GET['keyword'])) {
     <link rel="stylesheet" href="assets/css/nice-select.css">
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
-        .filter-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #f2f2f2;
-            padding: 10px;
-            border-radius: 5px;
-        }
+    .nav-search {
+        position: relative;
+    }
 
-        .filter-group {
-            margin-right: 10px;
-        }
+    .nav-search input[type="text"] {
+        width: 0;
+        opacity: 0;
+        transition: width 0.5s ease, opacity 0.5s ease;
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 5px;
+        border-radius: 5px;
+    }
 
-        .filter-select {
-            padding: 5px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-        }
+    .nav-search .flaticon-search {
+        cursor: pointer;
+    }
 
-        .filter-btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 3px;
-            background-color: #4CAF50;
-            color: #fff;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .filter-btn:hover {
-            background-color: #45a049;
-        }
-
-        .filter-btn+.filter-btn {
-            margin-left: 5px;
-        }
-
-        .row {
-            padding-top: 100px;
-        }
-
-        .nav-search {
-            position: relative;
-        }
-
-        .nav-search input[type="text"] {
-            width: 0;
-            opacity: 0;
-            transition: width 0.5s ease, opacity 0.5s ease;
-            position: absolute;
-            top: 0;
-            right: 0;
-            padding: 5px;
-            border-radius: 5px;
-        }
-
-        .nav-search .flaticon-search {
-            cursor: pointer;
-        }
-
-        .nav-search:hover input[type="text"] {
-            width: 200px;
-            opacity: 1;
-        }
-    </style>
+    .nav-search:hover input[type="text"] {
+        width: 200px;
+        opacity: 1;
+    }
+</style>
 
 </head>
 
+
 <body>
-    <!--? Preloader Start -->
-    <div id="preloader-active">
-        <div class="preloader d-flex align-items-center justify-content-center">
-            <div class="preloader-inner position-relative">
-                <div class="preloader-circle"></div>
-                <div class="preloader-img pere-text">
-                    <img src="assets/img/logo/logo.png" alt="">
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Preloader Start -->
+
     <header>
         <!-- Header Start -->
         <div class="header-area">
@@ -178,7 +108,7 @@ if (isset($_GET['keyword'])) {
                         <!-- Header Right -->
                         <div class="header-right">
                             <ul>
-                                <li>
+                            <li>
                                     <div class="nav-search">
                                         <form id="search-form" action="search.php" method="GET">
                                             <span class="flaticon-search"></span>
@@ -216,113 +146,143 @@ if (isset($_GET['keyword'])) {
             </div>
         </div>
         <!-- Hero Area End-->
-        <!-- Latest Products Start -->
-        <section class="popular-items latest-padding">
+        <!--================Single Product Area =================-->
+        <div class="product_image_area">
+
             <div class="container">
-
-                <div class="filter-bar">
-                    <div class="filter-group">
-                        <label for="category">Danh mục:</label>
-                        <select id="category" class="filter-select">
-                            <option value="">Tất cả</option>
-                            <option value="1">Sản phẩm 1</option>
-                            <option value="2">Sản phẩm 2</option>
-                            <option value="3">Sản phẩm 3</option>
-                            <!-- Thêm các tùy chọn danh mục khác nếu cần -->
-                        </select>
+           
+                <div class="row justify-content-center">
+                <div class="col-lg-12">
+                    <div class="product_img_slide owl-carousel">
+                        <?php foreach ($images as $image) { ?>
+                            <div class="single_product_img">
+                                <img  src="img/products/<?php echo $image['image']; ?>" alt="#" class="img-fluid">
+                            </div>
+                        <?php } ?>
                     </div>
-                    <div class="filter-group">
-
-                        <label for="price">Giá:</label>
-                        <input type="text" id="price" name="price" placeholder="Nhập giá tìm kiếm">
-
-
-                        <select id="price" class="filter-select">
-                            <option value="">Tất cả</option>
-                            <option value="low">Giá thấp</option>
-                            <option value="medium">Giá trung bình</option>
-                            <option value="high">Giá cao</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <button id="filter-btn" class="filter-btn">Lọc</button>
-                        <button id="reset-btn" class="filter-btn">Đặt lại</button>
-                    </div>
-
                 </div>
-                <!-- Grid and List view -->
-                <div class="grid-list-view">
-                    <!-- Select items -->
-                    <!-- Nav Card -->
-                    <div class="tab-content" id="nav-tabContent">
-                        <div class="tab-pane fade show active" role="tabpanel">
-                            <div class="grid-list-view">
-                                <div class="row">
-                                    <?php
-                                    // Hiển thị các sản phẩm tương tự
-                                    foreach ($results as $result) {
-                                        $product = $result['product'];
-                                    ?>
-
-                                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                            <div class="single-popular-items mb-50 text-center">
-                                                <div class="popular-img">
-                                                    <img src="image/<?php echo $product['image']; ?>" alt="">
-                                                    <div class="img-cap">
-                                                        <span><a href="cart.php?product=<?php echo urlencode(json_encode($product)); ?>&quantity=1">Add to Cart</a></span>
-                                                    </div>
-                                                    <div class="favorit-items">
-                                                        <span class="flaticon-heart"></span>
-                                                    </div>
-                                                </div>
-                                                <div class="popular-caption">
-                                                    <h3><a href="product_details.php?id=<?php echo $product['product_id'] ?>"><?php echo $product['product_name']; ?></a></h3>
-                                                    <span><?php echo $product['price']; ?>$</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <?php } ?>
-
+                    <div class="col-lg-8">
+                        <div class="single_product_text text-center">
+                            <h3>Description of specifications</h3>
+                            <div class="justify-items-start m-4">
+                                <div class="grid grid-cols-12">
+                                    <div class="col-span-4">
+                                        <p class="text-xl font-semibold">Thương hiệu: <?php echo $products['category_name'] ?></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-12 my-4">
+                                <div class="col-span-4">
+                                    <p class="text-xl font-semibold">Pro paramater: <?php echo $products['pro_paramater']; ?></p>
                                 </div>
 
+                            </div>
+                            
+                            <div class="grid grid-cols-12 my-4 ">
+                                <div class="col-span-4">
+                                    <p class="text-xl font-semibold">Machine Series: <?php echo $products['machine_series']; ?></p>
+                                </div>
+
+                            </div>
+                            <div class="grid grid-cols-12 my-4 ">
+                                <div class="col-span-4">
+                                    <p class="text-xl font-semibold">Rope Material: <?php echo $products['rope_material']; ?></p>
+                                </div>
+
+                            </div>
+                            <div class="grid grid-cols-12 my-4 ">
+                                <div class="col-span-4">
+                                    <p class="text-xl font-semibold">Shell Material: <?php echo $products['shell_material']; ?></p>
+                                </div>
+
+                            </div>
+                            <div class="grid grid-cols-12 my-4 ">
+                                <div class="col-span-4">
+                                    <p class="text-xl font-semibold">Glass Material: <?php echo $products['glass_material']; ?></p>
+                                </div>
+
+                            </div>
+                            <div class="grid grid-cols-12 my-4 ">
+                                <div class="col-span-4">
+                                    <p class="text-xl font-semibold">Face Size: <?php echo $products['face_size']; ?> </p>
+                                </div>
+
+                            </div>
+                            <div class="grid grid-cols-12 my-4 ">
+                                <div class="col-span-4">
+                                    <p class="text-xl font-semibold">Origin: <?php echo $products['origin']; ?></p>
+                                </div>
+
+                            </div>
+                            <div class="grid grid-cols-12 my-4 ">
+                                <div class="col-span-4">
+                                    <p class="text-xl font-semibold">Shape: <?php echo $products['shape']; ?></p>
+                                </div>
+
+                            </div>
+                            <div class="grid grid-cols-12 my-4 ">
+                                <div class="col-span-4">
+                                    <p class="text-xl font-semibold">Color: <?php echo $products['color']; ?></p>
+                                </div>
+
+                            </div>
+                            <div class="grid grid-cols-12 my-4 ">
+                                <div class="col-span-4">
+                                    <p class="text-xl font-semibold">Face Color: <?php echo $products['face_color']; ?></p>
+                                </div>
+
+                            </div>
+                            <div class="grid grid-cols-12 my-4 ">
+                                <div class="col-span-4">
+                                    <p class="text-xl font-semibold">Style: <?php echo $products['style']; ?></p>
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                        <div class="card_area">
+                            <div class="product_count_area">
+                                <p>Quantity</p>
+                                <div class="product_count d-inline-block">
+                                    <span class="product_count_item inumber-decrement"> <i class="ti-minus"></i></span>
+                                    <input class="product_count_item input-number" type="text" value="1" min="0" max="10">
+                                    <span class="product_count_item number-increment"> <i class="ti-plus"></i></span>
+                                </div>
+                                <p><?php echo $products['price'] ?>$</p>
+                            </div>
+                            <div class="add_to_cart text-center">
+                                <a href="" class="btn_3">add to cart</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        </div>
+
+        <!--================End Single Product Area =================-->
+        <!-- subscribe part here -->
+        <section class="subscribe_part section_padding">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="subscribe_part_content">
+                            <h2>Get promotions & updates!</h2>
+                            <p>Seamlessly empower fully researched growth strategies and interoperable internal or “organic” sources credibly innovate granular internal .</p>
+                            <div class="subscribe_form">
+                                <input type="email" placeholder="Enter your mail">
+                                <a href="#" class="btn_1">Subscribe</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-        <!-- Latest Products End -->
-        <!--? Shop Method Start-->
-        <div class="shop-method-area">
-            <div class="container">
-                <div class="method-wrapper">
-                    <div class="row d-flex justify-content-between">
-                        <div class="col-xl-4 col-lg-4 col-md-6">
-                            <div class="single-method mb-40">
-                                <i class="ti-package"></i>
-                                <h6>Free Shipping Method</h6>
-                                <p>aorem ixpsacdolor sit ameasecur adipisicing elitsf edasd.</p>
-                            </div>
-                        </div>
-                        <div class="col-xl-4 col-lg-4 col-md-6">
-                            <div class="single-method mb-40">
-                                <i class="ti-unlock"></i>
-                                <h6>Secure Payment System</h6>
-                                <p>aorem ixpsacdolor sit ameasecur adipisicing elitsf edasd.</p>
-                            </div>
-                        </div>
-                        <div class="col-xl-4 col-lg-4 col-md-6">
-                            <div class="single-method mb-40">
-                                <i class="ti-reload"></i>
-                                <h6>Secure Payment System</h6>
-                                <p>aorem ixpsacdolor sit ameasecur adipisicing elitsf edasd.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Shop Method End-->
+        <!-- subscribe part end -->
     </main>
     <footer>
         <!-- Footer Start-->
@@ -338,8 +298,7 @@ if (isset($_GET['keyword'])) {
                                 </div>
                                 <div class="footer-tittle">
                                     <div class="footer-pera">
-                                        <p>Asorem ipsum adipolor sdit amet, consectetur adipisicing elitcf sed do
-                                            eiusmod tem.</p>
+                                        <p>Asorem ipsum adipolor sdit amet, consectetur adipisicing elitcf sed do eiusmod tem.</p>
                                     </div>
                                 </div>
                             </div>
@@ -389,13 +348,11 @@ if (isset($_GET['keyword'])) {
                 <div class="row align-items-center">
                     <div class="col-xl-7 col-lg-8 col-md-7">
                         <div class="footer-copy-right">
-                            <p>
-                                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                            <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                                 Copyright &copy;<script>
                                     document.write(new Date().getFullYear());
                                 </script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                            </p>
+                                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
                         </div>
                     </div>
                     <div class="col-xl-5 col-lg-4 col-md-5">
@@ -426,7 +383,7 @@ if (isset($_GET['keyword'])) {
     <!-- Search model end -->
 
     <!-- JS here -->
-    <!-- All JS Custom Plugins Link Here here -->
+
     <script src="./assets/js/vendor/modernizr-3.5.0.min.js"></script>
     <!-- Jquery, Popper, Bootstrap -->
     <script src="./assets/js/vendor/jquery-1.12.4.min.js"></script>
@@ -455,12 +412,17 @@ if (isset($_GET['keyword'])) {
     <script src="./assets/js/jquery.validate.min.js"></script>
     <script src="./assets/js/mail-script.js"></script>
     <script src="./assets/js/jquery.ajaxchimp.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.5.0/js/bootstrap.bundle.min.js"></script>
 
     <!-- Jquery Plugins, main Jquery -->
     <script src="./assets/js/plugins.js"></script>
     <script src="./assets/js/main.js"></script>
+
+    <!-- swiper js -->
+    <script src="./assets/js/swiper.min.js"></script>
+    <!-- swiper js -->
+    <script src="./assets/js/mixitup.min.js"></script>
+    <script src="./assets/js/jquery.counterup.min.js"></script>
+    <script src="./assets/js/waypoints.min.js"></script>
 
 </body>
 
