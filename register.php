@@ -55,8 +55,7 @@ if (isset($_POST['submit'])) {
                     $mail->isHTML(true);                                  //Set email format to HTML
                     $mail->Subject = 'Email verification';
                     $mail->Body    = 'Here is the verification link <b><a href="http://localhost/WatchStore/login.php?verification=' . $code . '">http://localhost/WatchStore/?verification=' . $code . '</a></b>';
-
-                    $mail->send();
+$mail->send();
                     echo 'Message has been sent';
                 } catch (Exception $e) {
                     echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
@@ -146,7 +145,7 @@ body {
 .form-content .form-items {
     border: 3px solid #fff;
     padding: 40px;
-    display: inline-block;
+display: inline-block;
     width: 100%;
     min-width: 540px;
     -webkit-border-radius: 10px;
@@ -296,7 +295,7 @@ body {
                             <a href="index.php"><img src="assets/img/logo/logo.png" alt=""></a>
                         </div>
                         <!-- Main-menu -->
-                        <div class="main-menu d-none d-lg-block">
+<div class="main-menu d-none d-lg-block">
                             <nav>
                                 <ul id="navigation">
                                     <li><a href="index.php">Home</a></li>
@@ -349,7 +348,7 @@ body {
         </div>
         <!-- Header End -->
     </header>
-    <main>
+<main>
         <!-- Hero Area Start-->
         <div class="slider-area ">
             <div class="single-slider slider-height2 d-flex align-items-center">
@@ -396,7 +395,7 @@ body {
                                 class="border border-neutral-500 rounded px-2 !focus:border-cyan-500 py-1.5 mt-1"
                                 placeholder="Enter your email"
                                 value="<?php if (isset($_POST['submit'])) {
-                                                                                                                                                                                                        echo $email;
+echo $email;
                                                                                                                                                                                                     } ?>"
                                 required>
                         </div>
@@ -448,7 +447,7 @@ body {
                     <div class="col-xl-3 col-lg-3 col-md-5 col-sm-6">
                         <div class="single-footer-caption mb-50">
                             <div class="single-footer-caption mb-30">
-                                <!-- logo -->
+<!-- logo -->
                                 <div class="footer-logo">
                                     <a href="index.php"><img src="assets/img/logo/logo2_footer.png" alt=""></a>
                                 </div>
@@ -503,7 +502,7 @@ body {
                 </div>
                 <!-- Footer bottom -->
                 <div class="row align-items-center">
-                    <div class="col-xl-7 col-lg-8 col-md-7">
+<div class="col-xl-7 col-lg-8 col-md-7">
                         <div class="footer-copy-right">
                             <p>
                                 <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
@@ -565,7 +564,7 @@ body {
     <script src="./assets/js/jquery.scrollUp.min.js"></script>
     <script src="./assets/js/jquery.nice-select.min.js"></script>
     <script src="./assets/js/jquery.sticky.js"></script>
-    <script src="./assets/js/jquery.magnific-popup.js"></script>
+<script src="./assets/js/jquery.magnific-popup.js"></script>
 
     <!-- contact js -->
     <script src="./assets/js/contact.js"></script>

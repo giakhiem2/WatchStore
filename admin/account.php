@@ -72,12 +72,12 @@ $admins = executeResult($sql);
                         <div class="col-sm-12">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5>Products Category</h5>
+                                    <h5>Account</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="btn-popup pull-right">
-                                        <a href="category-add.php">
-                                            <button type="button" class="btn btn-primary">Add Category</button>
+                                        <a href="account-add.php">
+                                            <button type="button" class="btn btn-primary">Add Account</button>
                                         </a>
                                     </div>
                                     <div class="table-responsive">
@@ -112,7 +112,7 @@ $admins = executeResult($sql);
 
 
                                                         <td>
-                                                            <a href="category-edit.php?category_id=<?php echo $cate['category_id']; ?>"
+                                                            <a href="account-edit.php?admin_id=<?php echo $ad['admin_id']; ?>"
                                                                 class="btn btn-sm btn-outline-info">Edit</a>
                                                             <?php
 

@@ -1,7 +1,19 @@
 <?php
+
 require_once('../db/dbhelper.php');
-$sql = 'select * from admin';
-$admins = executeResult($sql);
+
+
+if (isset($_GET['admin_id'])) {
+    $admin_id = $_GET['admin_id'];
+
+    $sql = 'SELECT * FROM admin WHERE admin_id = '. $admin_id;
+    $admins = executeSingleResult($sql);
+    $image = $admins['image'];
+    $username = $admins['username'];
+    $password = $admins['password'];
+}
+
+
 ?>
 
 <!DOCTYPE html>
@@ -61,22 +73,26 @@ $admins = executeResult($sql);
             <!-- Page Sidebar Ends-->
 
             <div class="page-body">
-                <form action="process/account-add-process.php" method="post" enctype="multipart/form-data">
-
+                <form action="process/account-edit-process.php" method="post" 
+                                        enctype="multipart/form-data">
+                    <input type="text" value="<?php echo $admin_id ?>" name="admin_id" hidden>
                     <div class="form-group">
                         <label for="image">Image</label>
-                        <input type="file" mutiple class="form-control" id="image" name="image"> <!-- image[] -->
+                        <input type="file"  class="form-control" id="image" name="image">
+                        <img src="<?php echo $image?>" width="100px" height="100px" >
+                        <input type="hidden" name="existing_image" value="<?php echo $image?>">
                     </div>
                     <div class="form-group">
                         <label for="exampleInputPassword1">UserName</label>
-                        <input type="text" class="form-control" name="username" id="username">
+                        <input type="text" class="form-control" name="username"  value="<?php echo $username?>">
                     </div>
                     <div class="form-group">
                         <label for="exampleInputPassword1">Password</label>
-                        <input type="text" class="form-control" name="password" id="password">
+                        <input type="text" class="form-control" name="password"  value="<?php echo $password?>">
                     </div>
-
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    
+                                                          
+                   <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
 
             </div>
