@@ -205,7 +205,7 @@ if (isset($_GET['id'])) {
                                                         <div class="popular-img">
                                                             <img src="image/<?php echo $product['image']; ?>" alt="">
                                                             <div class="img-cap">
-                                                            <span><a href="cart.php?product=<?php echo urlencode(json_encode($product)); ?>&quantity=1">Add to Cart</a></span></span>
+                                                            <span><a href="cart.php?product=<?php echo $product['product_id'] ?>">Add to Cart</a></span></span>
                                                             </div>
                                                             <div class="favorit-items">
                                                                 <span class="flaticon-heart"></span>

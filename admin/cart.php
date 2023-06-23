@@ -75,7 +75,6 @@ $carts = executeResult($sql);
                 <th scope="col">price</th>
                 <th scope="col">created_at</th>
                 <th scope="col">updated_at</th>
-                <th scope="col">order ID</th> <!-- Thêm cột hiển thị order ID -->
             </tr>
         </thead>
         <tbody>
@@ -91,7 +90,7 @@ $carts = executeResult($sql);
                         <td><?php echo $cart['price']; ?></td>
                         <td><?php echo $cart['created_at']; ?></td>
                         <td><?php echo $cart['updated_at']; ?></td>
-                        <td><?php echo $cart['order_id']; ?></td> <!-- Hiển thị order ID -->
+                        
                     </tr>
             <?php
                 }

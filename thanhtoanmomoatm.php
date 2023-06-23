@@ -4,7 +4,8 @@ session_start();
 
 // Kiểm tra xem đã lưu trữ thông tin đơn hàng trong session hay chưa
 if (isset($_SESSION['selectedProducts'])) {
-    $selectedProducts = $_SESSION['selectedProducts'];   
+    $selectedProducts = $_SESSION['selectedProducts']; 
+    $totalAmount = $_POST['totalAmount'];  
 // Tính tổng giá trị đơn hàng
 $totalAmount = 0;
 foreach ($selectedProducts as $index => $selectedProduct) {
@@ -18,8 +19,14 @@ foreach ($selectedProducts as $index => $selectedProduct) {
     $_SESSION['totalAmount'] = $totalAmount;
 } else {
     $totalAmount = 0;
+}if (isset($_POST['totalAmount'])) {
+    $totalAmount = $_POST['totalAmount'] * 23000;
+} else {
+    // Nếu không có giá trị totalAmount, chuyển hướng về trang checkout.php
+    header('Location: checkout.php');
+    exit();
 }
-
+$_SESSION['totalAmount'] = $totalAmount;
 function execPostRequest($url, $data)
 {
     $ch = curl_init($url);

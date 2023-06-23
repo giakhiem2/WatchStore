@@ -1,17 +1,19 @@
 <?php
 require_once('../WatchStore/db/dbhelper.php');
 session_start();
+$email = $_SESSION['SESSION_EMAIL'];
+$query = executeSingleResult("SELECT * FROM users WHERE email='$email'");
+$customer_name = $query['name'];
+$customer_email = $query['email'];
+$phone_number = $query['phone'];
+$address = $query['address'];
+// if (isset($_SESSION['selectedProducts'])) {
+//   $selectedProducts = $_SESSION['selectedProducts'];
 
-// Kiểm tra xem có thông tin giỏ hàng trong session hay không
-if (isset($_SESSION['selectedProducts'])) {
-  $selectedProducts = $_SESSION['selectedProducts'];
-
-  // ... Hiển thị thông tin giỏ hàng trong trang xác nhận ...
-} else {
-  // Nếu không có thông tin giỏ hàng, chuyển hướng người dùng đến trang checkout
-  header("Location: checkout.php");
-  exit();
-}
+// } else {
+//   header("Location: checkout.php");
+//   exit();
+// }
 if (isset($_GET['partnerCode'])) {
 	$code_order = rand(0, 999);
 	$partnerCode = $_GET['partnerCode'];
@@ -21,35 +23,52 @@ if (isset($_GET['partnerCode'])) {
 	$orderType = $_GET['orderType'];
 	$transId = $_GET['transId'];
 	$payType = $_GET['payType'];
+    $payment_method = "MOMO";
 
 
-	$inset_momo = " insert into momo(partnerCode,orderId,amount,orderInfo,orderType,transId,payType,id) values ('" . $partnerCode . "','" . $orderId . "','" . $amount . "','" . $orderInfo . "'
-,'" . $orderType . "','" . $transId . "','" . $payType . "','" . $code_order . "')";
+    $check_cart = executeResult("SELECT * FROM cart WHERE userid = {$query['id']}");
+    echo '<pre>';
+    print_r($check_cart);
+    echo '</pre>';
 
-	execute($inset_momo);
-
-
-	 if (isset($_SESSION['email'])) {
-	 	$eamil = $_SESSION['email'];
-		$sql1 = 'select * from cart where sh_id= "' . $eamil . '"';
-		$or_cart = executeResult($sql1);
-
-	 	foreach ($or_cart as $cart) {
-			$sh_id = $cart['sh_id'];
-			$size = $cart['size'];
-	 		$quantity = $cart['quantity'];
-	 		$pr_id = $cart['pr_id'];
-
-	 		$sql = 'insert into order_list(sh_id,pr_id,size,quantity,Time_Order) values ("' . $sh_id . '","' . $pr_id . '","' . $size . '","' . $quantity . '",now())';
-	 		execute($sql);
-
-	 		$update_quantity = 'UPDATE product_size SET quantity = quantity - ' . $quantity . ' WHERE pr_id = "' . $pr_id . '" AND size = "' . $size . '"';
-	 		execute($update_quantity);
-	 	}
-	 	$sql2 = 'delete from cart where sh_id="' . $eamil . '"';
-	 	execute($sql2);
-	 }
+    execute("INSERT INTO orders (order_id, customer_name, email, phone_number, total_amount, order_date, status, delivery_address)
+    VALUES ('$code_order', '$customer_name', '$email', '$phone_number', $amount, NOW(), 1, '$address')");
+    foreach($check_cart as $cart){
+        $pid = $cart['productid'];
+        execute ("INSERT INTO order_details (order_id, payment_method, customer_name, customer_email, created_at, productid)
+        VALUES ('$code_order','$payment_method', '$customer_name', '$customer_email', NOW(), $pid)");
+    }
 }
+exit();
+
+
+// 	$inset_momo = " insert into momo(partnerCode,orderId,amount,orderInfo,orderType,transId,payType,id) values ('" . $partnerCode . "','" . $orderId . "','" . $amount . "','" . $orderInfo . "'
+// ,'" . $orderType . "','" . $transId . "','" . $payType . "','" . $code_order . "')";
+
+// 	execute($inset_momo);
+
+
+	//  if (isset($_SESSION['email'])) {
+	//  	$eamil = $_SESSION['email'];
+	// 	$sql1 = 'select * from cart where sh_id= "' . $eamil . '"';
+	// 	$or_cart = executeResult($sql1);
+
+	//  	foreach ($or_cart as $cart) {
+	// 		$sh_id = $cart['sh_id'];
+	// 		$size = $cart['size'];
+	//  		$quantity = $cart['quantity'];
+	//  		$pr_id = $cart['pr_id'];
+
+	//  		$sql = 'insert into order_list(sh_id,pr_id,size,quantity,Time_Order) values ("' . $sh_id . '","' . $pr_id . '","' . $size . '","' . $quantity . '",now())';
+	//  		execute($sql);
+
+	//  		$update_quantity = 'UPDATE product_size SET quantity = quantity - ' . $quantity . ' WHERE pr_id = "' . $pr_id . '" AND size = "' . $size . '"';
+	//  		execute($update_quantity);
+	//  	}
+	//  	$sql2 = 'delete from cart where sh_id="' . $eamil . '"';
+	//  	execute($sql2);
+	//  }
+// }
 ?>
 <!doctype html>
 <html lang="zxx">

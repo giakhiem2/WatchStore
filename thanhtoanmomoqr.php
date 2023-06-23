@@ -5,24 +5,31 @@ session_start();
 // Kiểm tra xem đã lưu trữ thông tin đơn hàng trong session hay chưa
 if (isset($_SESSION['selectedProducts'])) {
     $selectedProducts = $_SESSION['selectedProducts'];
+    // Lấy giá trị tổng giá tiền từ yêu cầu POST
+$totalAmount = $_POST['totalAmount'];
+
+    // Tính tổng giá trị đơn hàng
+    $totalAmount = 0;
+    foreach ($selectedProducts as $index => $selectedProduct) {
+        $product = $selectedProduct['product'];
+        $quantity = $selectedProduct['quantity'];
+        $totalPrice = $product['price'] * $quantity * 23000;
+        $totalAmount += $totalPrice;
+    }
     
-// Tính tổng giá trị đơn hàng
-$totalAmount = 0;
-foreach ($selectedProducts as $index => $selectedProduct) {
-    $product = $selectedProduct['product'];
-    $quantity = $selectedProduct['quantity'];
-    $totalPrice = $product['price'] * $quantity * 23000;
-    $totalAmount += $totalPrice;
-    //$totalMoMo = $totalAmount *230000;
-} 
     // Lưu tổng giá trị đơn hàng vào session
-    $_SESSION['payUrl'] = $payUrl;
-$_SESSION['selectedProducts'] = $selectedProducts;
     $_SESSION['totalAmount'] = $totalAmount;
 } else {
     $totalAmount = 0;
+}if (isset($_POST['totalAmount'])) {
+    $totalAmount = $_POST['totalAmount'] * 23000;
+} else {
+    // Nếu không có giá trị totalAmount, chuyển hướng về trang checkout.php
+    header('Location: checkout.php');
+    exit();
 }
-
+// Lưu giá trị totalAmount vào session để sử dụng trong quá trình xử lý thanh toán
+$_SESSION['totalAmount'] = $totalAmount;
 function execPostRequest($url, $data)
 {
     $ch = curl_init($url);
@@ -55,10 +62,10 @@ $extraData = "";
 
 $requestId = time() . "";
 $requestType = "captureWallet";
-// Tính toán chữ ký với giá trị amount đã thay đổi thành $
+
+// Tạo chữ ký cho MoMo
 $rawHash = "accessKey=" . $accessKey . "&amount=" . $totalAmount . "&extraData=" . $extraData . "&ipnUrl=" . $ipnUrl . "&orderId=" . $orderId . "&orderInfo=" . $orderInfo . "&partnerCode=" . $partnerCode . "&redirectUrl=" . $redirectUrl . "&requestId=" . $requestId . "&requestType=" . $requestType;
 $signature = hash_hmac("sha256", $rawHash, $secretKey);
-
 
 $data = array(
     'partnerCode' => $partnerCode,
@@ -75,9 +82,9 @@ $data = array(
     'requestType' => $requestType,
     'signature' => $signature
 );
-
+// Gửi yêu cầu thanh toán MoMo và nhận kết quả
 $result = execPostRequest($endpoint, json_encode($data));
-$jsonResult = json_decode($result, true);  // Giải mã json
+$jsonResult = json_decode($result, true);
 
 // Kiểm tra xem có nhận được URL thanh toán từ MoMo hay không
 if (isset($jsonResult['payUrl'])) {
@@ -85,13 +92,10 @@ if (isset($jsonResult['payUrl'])) {
 
     // Chuyển hướng đến URL thanh toán của MoMo
     header('Location: ' . $payUrl);
-    exit(); // Đảm bảo kết thúc luồng chương trình
+    exit();
 } else {
     // Xử lý khi không nhận được URL thanh toán từ MoMo
-    // Chuyển hướng trở lại trang checkout
     header('Location: checkout.php');
-    exit(); // Đảm bảo kết thúc luồng chương trình
+    exit();
 }
-
 ?>
-

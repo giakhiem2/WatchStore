@@ -1,4 +1,5 @@
 <?php
+require_once 'db/dbhelper.php';
 if (isset($_POST['product']) && isset($_POST['quantity'])) {
     // Trích xuất thông tin sản phẩm từ dữ liệu gửi đi
     $product = json_decode($_POST['product'], true);
@@ -14,62 +15,28 @@ if (isset($_POST['product']) && isset($_POST['quantity'])) {
 ?>
 <?php
 session_start();
-// Check if the selected products are stored in the session
-if (isset($_SESSION['selectedProducts'])) {
-  $selectedProducts = $_SESSION['selectedProducts'];
-} else {
-  $selectedProducts = array();
+if(isset($_SESSION['SESSION_EMAIL'])){
+    $email = $_SESSION['SESSION_EMAIL'];
+    $query = executeSingleResult("SELECT * FROM users WHERE email='$email'");
+    $id = $query['id'];
 }
-
-// Check if a new product and quantity are passed from the "add to cart" functionality
-if (isset($_GET['product']) && isset($_GET['quantity'])) {
-  $product = json_decode($_GET['product'], true);
-  $quantity = $_GET['quantity'];
-  
-
-  // Check if the product with the same product_id already exists in the selected products array
-  $productIndex = getProductIndexById($selectedProducts, $product['product_id']);
-
-  if ($productIndex !== false) {
-    // If the product exists, increase the quantity by one
-    $selectedProducts[$productIndex]['quantity'] += 1;
-  } else {
-    // If the product doesn't exist, add it to the selected products array with quantity one
-    $newProduct = array(
-      'product' => $product,
-      'quantity' => $quantity
-    );
-    $selectedProducts[] = $newProduct;
-  }
-
-  // Update the selected products in the session
-  $_SESSION['selectedProducts'] = $selectedProducts;
+if(isset($_GET['product'])){
+    $product_id = $_GET['product'];
+    $check = executeSingleResult("SELECT * FROM product WHERE product_id = $product_id");
+    $price = $check['price'];
+    execute("INSERT INTO cart (userid, productid, quantity, price, created_at) VALUES ($id, $product_id, 1, $price, NOW())");
 }
+if (isset($_POST['product']) && isset($_POST['quantity'])) {
+    // Trích xuất thông tin sản phẩm từ dữ liệu gửi đi
+    $product = json_decode($_POST['product'], true);
+    $quantity = $_POST['quantity'];
 
-// Check if the remove_index parameter is set
-if (isset($_GET['remove_index'])) {
-  $removeIndex = $_GET['remove_index'];
+    // Thực hiện xử lý tiếp theo, ví dụ: lưu thông tin sản phẩm vào giỏ hàng
+    // ...
 
-  // Remove the product from the selectedProducts array using the index
-  if (isset($selectedProducts[$removeIndex])) {
-      unset($selectedProducts[$removeIndex]);
-  }
-
-  // Re-index the array to fix any gaps in the keys
-  $selectedProducts = array_values($selectedProducts);
-
-  // Update the session with the modified array
-  $_SESSION['selectedProducts'] = $selectedProducts;
-}
-
-// Function to get the index of a product in the selected products array based on the product_id
-function getProductIndexById($selectedProducts, $productId) {
-  foreach ($selectedProducts as $index => $selectedProduct) {
-    if ($selectedProduct['product']['product_id'] === $productId) {
-      return $index;
-    }
-  }
-  return false;
+    // Chuyển hướng sau khi xử lý thành công
+    header('Location: cart.php');
+    exit();
 }
 ?>
 
@@ -222,31 +189,90 @@ function getProductIndexById($selectedProducts, $productId) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php
-                        // Iterate over the selected products and display them in the table
-                        foreach ($selectedProducts as $index => $selectedProduct) {
-                            $product = $selectedProduct['product'];
-                            $quantity = $selectedProduct['quantity'];
-                            $totalPrice = $product['price'] * $quantity;
-                        ?>
-                            <tr>
-                                <td>
-                                    <?php if (isset($product['image'])) : ?>
-                                        <img src="image/<?php echo $product['image']; ?>" width="50px" height="50px" style="border-radius: 50px;" alt="">
-                                    <?php endif; ?>
-                                </td>
-                                <td><?php echo $product['price']; ?>$</td>
-                                <td>
-                                    <input type="number" value="<?php echo $quantity; ?>" min="1" max="<?php echo $product['quantity']; ?>" name="quantity" data-index="<?php echo $index; ?>" onchange="updateTotal(this)">
-                                </td>
-                                <td id="totalPrice-<?php echo $index; ?>"><?php echo $totalPrice; ?>$</td>
-                                <td>
-                                    <a href="cart.php?remove_index=<?php echo $index; ?>" class="btn_1">Remove</a>
-                                </td>
-                            </tr>
-                        <?php
-                        }
-                        ?>
+                    <?php
+// Lấy danh sách sản phẩm trong giỏ hàng
+$carts = executeResult("SELECT * FROM cart WHERE userid = $id");
+
+// Tạo một mảng tạm để lưu trữ thông tin sản phẩm
+$mergedCarts = [];
+// Gộp các sản phẩm có cùng product_id lại thành một sản phẩm duy nhất
+foreach ($carts as $cart) {
+    $product_id = $cart['productid'];
+    $quantity = $cart['quantity'];
+    $price = $cart['price'];
+
+    // Kiểm tra xem sản phẩm đã được gộp hay chưa
+    $found = false;
+    foreach ($mergedCarts as &$mergedCart) {
+        if ($mergedCart['productid'] == $product_id) {
+            // Sản phẩm đã tồn tại trong mảng tạm, tăng số lượng và giá tiền
+            $mergedCart['quantity'] += $quantity;
+            $mergedCart['price'] += $quantity * $price;
+            $found = true;
+            break;
+        }
+    }
+
+    // Nếu sản phẩm chưa tồn tại, thêm vào mảng tạm
+    if (!$found) {
+        $mergedCarts[] = [
+            'productid' => $product_id,
+            'quantity' => $quantity,
+            'price' => $quantity * $price
+        ];
+    }if (isset($_GET['product'])) {
+        $product_id = $_GET['product'];
+        $existingCart = executeSingleResult("SELECT * FROM cart WHERE userid = $id AND productid = $product_id");
+        if (!$existingCart) {
+            $check = executeSingleResult("SELECT * FROM product WHERE product_id = $product_id");
+            if ($check) {
+                $price = $check['price'];
+                execute("INSERT INTO cart (userid, productid, quantity, price, created_at) VALUES ($id, $product_id, 1, $price, NOW())");
+            }
+        }
+    }// Kiểm tra xem có thông tin sản phẩm cần xóa không
+if (isset($_GET['remove_product'])) {
+    $remove_product_id = $_GET['remove_product'];
+    // Thực hiện xóa sản phẩm khỏi giỏ hàng dựa trên product_id
+    execute("DELETE FROM cart WHERE userid = $id AND productid = $remove_product_id");
+    // Chuyển hướng lại trang giỏ hàng để cập nhật thông tin
+    echo "<script>window.location.href = 'cart.php';</script>";
+exit();
+
+}
+    
+}
+
+// Hiển thị thông tin sản phẩm đã gộp trong bảng
+foreach ($mergedCarts as $index => $mergedCart) {
+    $product_id = $mergedCart['productid'];
+    $quantity = $mergedCart['quantity'];
+    $totalPrice = $mergedCart['price'];
+
+    // Lấy thông tin sản phẩm từ product_id
+    $product = executeSingleResult("SELECT * FROM product WHERE product_id = $product_id");
+
+    ?>
+    <tr>
+        <td>
+            <?php if (isset($product['image'])) : ?>
+                <img src="image/<?php echo $product['image']; ?>" width="50px" height="50px" style="border-radius: 50px;" alt="">
+            <?php endif; ?>
+        </td>
+        <td><?php echo $product['price']; ?>$</td>
+        <td>
+            <input type="number" value="<?php echo $quantity; ?>" min="1" max="<?php echo $product['quantity']; ?>" name="quantity" id="quantity-<?php echo $index; ?>" data-index="<?php echo $index; ?>" onchange="updateTotal(this)">
+        </td>
+        <td id="totalPrice-<?php echo $index; ?>"><?php echo $totalPrice; ?>$</td>
+        <!-- Modify the "Remove" button in the table to include the product ID -->
+        <td>
+            <a href="cart.php?remove_product=<?php echo $product_id; ?>" class="btn_1">Remove</a>
+        </td>
+    </tr>
+    <?php
+}
+?>
+        
                     </tbody>
                     </table>
             </div>
@@ -254,7 +280,7 @@ function getProductIndexById($selectedProducts, $productId) {
                 <a class="btn_1" href="shop.php">Continue Shopping</a>
                 <div class="cupon_text float-right">
                     <a class="btn_1" href="checkout.php">Purchase</a>
-                    <a class="btn_1" href="javascript:location.reload(true)">Update</a>
+                    
                 </div>
             </div>
         </div>
@@ -394,30 +420,7 @@ function getProductIndexById($selectedProducts, $productId) {
   <!-- Jquery Plugins, main Jquery -->	
   <script src="./assets/js/plugins.js"></script>
   <script src="./assets/js/main.js"></script>
-  <<script>
-    function updateTotal(input) {
-        var index = input.getAttribute('data-index');
-        var quantity = input.value;
-        var price = <?php echo $product['price']; ?>;
-        var total = quantity * price;
-        document.getElementById('totalPrice-' + index).textContent = total.toFixed(2) + '$';
-        // Cập nhật tổng tiền trên server (gửi yêu cầu AJAX đến server để cập nhật)
-        updateTotalOnServer(index, total);
-    }
-
-    function updateTotalOnServer(index, total) {
-        // Gửi yêu cầu AJAX đến server để cập nhật tổng tiền dựa trên index và total
-        var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'update_total.php', true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                // Xử lý phản hồi từ server (nếu cần)
-            }
-        };
-        xhr.send('index=' + index + '&total=' + total);
-    }
-</script>
+  
 <script>
     function updateTotal(inputElement) {
   var newQuantity = inputElement.value;
@@ -436,5 +439,34 @@ function getProductIndexById($selectedProducts, $productId) {
   xhr.send('index=' + index + '&newQuantity=' + newQuantity);
 }
 </script>
+
+    <script>
+function updateTotal(input) {
+    var quantity = parseInt(input.value);
+    var price = parseFloat(input.parentNode.previousElementSibling.innerText.replace('$', ''));
+    var totalPriceElement = input.parentNode.nextElementSibling;
+    var totalPrice = quantity * price;
+    totalPriceElement.innerText = totalPrice + '$';
+}
+</script>
+<script>
+    function removeProduct(productId) {
+        if (confirm('Are you sure you want to remove this product?')) {
+            // Send an AJAX request to the server to remove the product from the cart
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    // Reload the page after successful removal
+                    location.reload();
+                }
+            };
+            xhttp.open('GET', 'remove_product.php?product=' + productId, true);
+            xhttp.send();
+        }
+    }
+</script>
+
+
+
 </body>
 </html>

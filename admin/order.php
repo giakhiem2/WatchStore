@@ -1,6 +1,6 @@
 <?php
 require_once('../db/dbhelper.php');
-$sql = "SELECT * FROM `order`";
+$sql = "SELECT * FROM `orders`";
 $orders = executeResult($sql);
 ?>
 <!DOCTYPE html>

@@ -1,7 +1,14 @@
 <?php
 session_start();
-
 include 'config.php';
+require_once 'db/dbhelper.php';
+if (!isset($_SESSION['SESSION_EMAIL'])) {
+  header("Location: index.php");
+  die();
+}
+$email = $_SESSION['SESSION_EMAIL'];
+$query = executeSingleResult("SELECT * FROM users WHERE email='$email'");
+$id = $query['id'];
 
 // Kiểm tra nút "MOMO" hoặc "PayPal" được nhấp
 if (isset($_POST['momo'])) {
@@ -12,22 +19,10 @@ if (isset($_POST['momo'])) {
   // ...
 }
 
-if (!isset($_SESSION['SESSION_EMAIL'])) {
-    header("Location: index.php");
-    die();
-}
+
 
 // Lấy thông tin người dùng từ cơ sở dữ liệu
-$email = $_SESSION['SESSION_EMAIL'];
-$query = mysqli_query($conn, "SELECT * FROM users WHERE email='$email'");
 
-// Kiểm tra xem có kết quả trả về hay không
-if (mysqli_num_rows($query) > 0) {
-    $row = mysqli_fetch_assoc($query);
-
-    // Tiếp tục hiển thị biểu mẫu và gán giá trị từ $row
-    // ...
-}
 ?>
 
 <!doctype html>
@@ -180,23 +175,23 @@ if (mysqli_num_rows($query) > 0) {
           <form class="contact_form" action="#" method="post" novalidate="novalidate">
             <div class="form-row">
               <div class="col-md-6 form-group">
-                <input type="text" class="form-control" id="name" name="name" placeholder="Name" value="<?php echo $row['name']; ?>" required />
+                <input type="text" class="form-control" id="name" name="name" placeholder="Name" value="<?php echo $query['name']; ?>" required />
               </div>
             </div>
             <div class="form-row">
               <div class="col-md-6 form-group">
-                <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone" pattern="0\d{9}" value="<?php echo $row['phone']; ?>" required />
+                <input type="tel" class="form-control" id="phone" name="phone" placeholder="Phone" pattern="0\d{9}" value="<?php echo $query['phone']; ?>" required />
                 <small>Please enter a valid phone number starting with 0.</small>
               </div>
               <div class="col-md-6 form-group">
-                <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" value="<?php echo $row['email']; ?>" required />
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email Address" value="<?php echo $query['email']; ?>" required />
                 <small>Please enter a valid email address (example: example@gmail.com).</small>
               </div>
             </div>
 
             <div class="form-row">
               <div class="col-md-12 form-group">
-                <input type="text" class="form-control" id="address" name="address" placeholder="Address" value="<?php echo $row['address']; ?>" required />
+                <input type="text" class="form-control" id="address" name="address" placeholder="Address" value="<?php echo $query['address']; ?>" required />
               </div>
             </div>
 
@@ -214,54 +209,74 @@ if (mysqli_num_rows($query) > 0) {
         </div>
         <div class="col-lg-4">
           <div class="order_box">
-              <h2>Your Order</h2>
-              <ul class="list">
-                <li>
-                  <a href="cart.php">Product
-                    <span>Total</span>
-                  </a>
-                </li>
-                <?php
-                // Kiểm tra xem đã lưu trữ thông tin đơn hàng trong session hay chưa
-                if (isset($_SESSION['selectedProducts'])) {
-                  $selectedProducts = $_SESSION['selectedProducts'];
+          <h2>Your Order</h2>
+<ul class="list">
+  <?php
+  // Kiểm tra xem đã lưu trữ thông tin đơn hàng trong session hay chưa
+  $cart = executeResult("SELECT * FROM cart WHERE userid = $id");
 
-                  // Tính tổng giá tiền của các sản phẩm
-                  $totalAmount = 0;
-                  foreach ($selectedProducts as $index => $selectedProduct) {
-                    $product = $selectedProduct['product'];
-                    $quantity = $selectedProduct['quantity'];
-                    $totalPrice = $product['price'] * $quantity;
-                    $totalAmount += $totalPrice;
+  if (!empty($cart)) {
+    // Tạo một mảng để lưu trữ thông tin sản phẩm
+    $products = array();
 
-                    // Hiển thị thông tin sản phẩm
-                    echo '<li>';
-                    echo '<a href="#">';
+    foreach ($cart as $c) {
+      $product = $c['productid'];
+      $quantity = $c['quantity'];
+      $totalPrice = $c['price'] * $quantity;
 
-                    // Kiểm tra xem ảnh sản phẩm có tồn tại hay không
-                    if (isset($product['image'])) {
-                      $imagePath = 'image/' . $product['image'];
-                      echo '<img src="' . $imagePath . '" width="50px" height="50px" alt="Product Image">';
-                    }
+      // Kiểm tra xem sản phẩm đã tồn tại trong mảng $products hay chưa
+      if (array_key_exists($product, $products)) {
+        // Sản phẩm đã tồn tại, tăng số lượng và cập nhật tổng giá tiền
+        $products[$product]['quantity'] += $quantity;
+        $products[$product]['totalPrice'] += $totalPrice;
+      } else {
+        // Sản phẩm chưa tồn tại, thêm mới vào mảng $products
+        $products[$product] = array(
+          'product_id' => $product,
+          'quantity' => $quantity,
+          'totalPrice' => $totalPrice
+        );
+      }
+    }
 
-                    echo '<span class="middle">x ' . $quantity . '</span>';
-                    echo '<span class="last">' . $totalPrice . '$</span>';
-                    echo '</a>';
-                    echo '</li>';
-                  }
+    // Hiển thị thông tin sản phẩm
+    foreach ($products as $product) {
+      $productId = $product['product_id'];
+      $quantity = $product['quantity'];
+      $totalPrice = $product['totalPrice'];
 
-                  // Hiển thị tổng giá tiền
-  echo '<li>';
-  echo '<a href="#">Total';
-  echo '<span id="totalAmount">' . $totalAmount . '$</span>'; // Đặt id cho phần tổng giá trị đơn hàng
-  echo '</a>';
-  echo '</li>';
+      $productInfo = executeSingleResult("SELECT * FROM product WHERE product_id = $productId");
 
-                } else {
-                  echo '<p>No products in the cart.</p>';
-                }
-                ?>
-            </ul>
+      echo '<li>';
+      echo '<a href="#">';
+
+      // Kiểm tra xem ảnh sản phẩm có tồn tại hay không
+      if (isset($productInfo['image'])) {
+        $imagePath = 'image/' . $productInfo['image'];
+        echo '<img src="' . $imagePath . '" width="50px" height="50px" alt="Product Image">';
+      }
+
+      echo '<span class="middle">x ' . $quantity . '</span>';
+      echo '<span class="last">' . $totalPrice . '$</span>';
+      echo '</a>';
+      echo '</li>';
+    }
+
+    // Tính tổng giá tiền của đơn hàng
+    $totalAmount = array_sum(array_column($products, 'totalPrice'));
+
+    // Hiển thị tổng giá tiền
+    echo '<li>';
+    echo '<a href="#">Total';
+    echo '<span id="totalAmount">' . $totalAmount . '$</span>'; // Đặt id cho phần tổng giá trị đơn hàng
+    echo '</a>';
+    echo '</li>';
+
+  } else {
+    echo '<p>No products in the cart.</p>';
+  }
+  ?>
+</ul>
 
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css">
 
@@ -333,13 +348,15 @@ if (mysqli_num_rows($query) > 0) {
 <button id="checkPaymentsButton" class="btn btn-primary" type="button" disabled>Payments</button>
 
 <form class="payment-form" method="POST" target="_blank" enctype="application/x-www-form-urlencoded" action="thanhtoanmomoqr.php" style="display: none;">
-  <button type="submit" name="momoQR" class="btn btn-danger btn-payment">
+  <input type="hidden" name="totalAmount" value="<?php echo $totalAmount; ?>">
+  <button type="submit" name="momoQR" class="btn btn-primary btn-payment">
     <span>MOMO QR</span>
   </button>
 </form>
 
 <form class="payment-form" method="POST" target="_blank" enctype="application/x-www-form-urlencoded" action="thanhtoanmomoatm.php" style="display: none;">
-  <button type="submit" name="momoATM" class="btn btn-danger btn-payment">
+  <input type="hidden" name="totalAmount" value="<?php echo $totalAmount; ?>">
+  <button type="submit" name="momoATM" class="btn btn-primary btn-payment">
     <span>MOMO ATM</span>
   </button>
 </form>
