@@ -1,7 +1,7 @@
 <?php
 require_once('../db/dbhelper.php');
-$sql = "SELECT * FROM `orders`";
-$orders = executeResult($sql);
+$sql = "SELECT * FROM `order_details`";
+$order_details = executeResult($sql);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -65,7 +65,7 @@ $orders = executeResult($sql);
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Orders</h5>
+                        <h5>order_details</h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -73,38 +73,43 @@ $orders = executeResult($sql);
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th scope="col">Order ID</th>
-                                            <th scope="col">Customer Name</th>
-                                            <th scope="col">Email</th>
-                                            <th scope="col">Phone Number</th>
-                                            <th scope="col">Order Date</th>
-                                            <th scope="col">Status</th>
-                                            <th scope="col">Delivery Address</th>
-                                            <th scope="col">Action</th> <!-- Thêm cột Action -->
+                                        <th scope="col">Order ID</th>
+                                            <th scope="col">Product ID</th>
+                                            <th scope="col">Product Name</th>
+                                            <th scope="col">Image</th>
+                                            <th scope="col">Quantity</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-    <?php
-    if ($orders != null) {
-        foreach ($orders as $order) {
-    ?>
-        <tr>
-            <td><?php echo $order['order_id']; ?></td>
-            <td><?php echo $order['customer_name']; ?></td>
-            <td><?php echo $order['email']; ?></td>
-            <td><?php echo $order['phone_number']; ?></td>
-            <td><?php echo $order['order_date']; ?></td>
-            <td><?php echo $order['status']; ?></td>
-            <td><?php echo $order['delivery_address']; ?></td>
-            <td>
-            <a href="view_order.php?order_id=<?php echo $order['order_id']; ?>">View Order</a>
+                                    <?php
+    if ($order_details != null) {
+        foreach ($order_details as $order_detail) {
+            $product_id = $order_detail['product_id'];
 
+            // Truy vấn dữ liệu từ bảng product dựa trên product_id
+            $sql = "SELECT * FROM product WHERE product_id = '$product_id'";
+            $product = executeSingleResult($sql);
 
+            // Kiểm tra và hiển thị thông tin sản phẩm
+            if ($product) {
+                $product_name = $product['product_name'];
+                $image = $product['image'];
+                $quantity = $product['quantity'];
 
-                    </td> <!-- Thêm nút View Order -->
+                // Hiển thị các thông tin khác về sản phẩm
+                // Ví dụ: $product['price'], $product['brand'], vv.
+                
+                echo '<tr>';
+                echo '<td>'.$order_detail['order_id'].'</td>';
+                echo '<td>'.$order_detail['product_id'].'</td>';
+                echo '<td>'.$product_name.'</td>';
+                echo '<td><img src="'.$image.'" alt="Product Image" style="width: 100px;"></td>';
 
-        </tr>
-    <?php
+                echo '<td>'.$quantity.'</td>'; 
+                // Hiển thị các thông tin khác về sản phẩm
+
+                echo '</tr>';
+            }
         }
     }
     ?>

@@ -1,5 +1,10 @@
 <?php
-require_once('../WatchStore/db/dbhelper.php');
+require_once('db/dbhelper.php');
+$sql = "SELECT * FROM `confirmation`";
+$confirmations = executeResult($sql);
+?>
+<?php
+require_once('db/dbhelper.php');
 session_start();
 $email = $_SESSION['SESSION_EMAIL'];
 $query = executeSingleResult("SELECT * FROM users WHERE email='$email'");
@@ -7,69 +12,37 @@ $customer_name = $query['name'];
 $customer_email = $query['email'];
 $phone_number = $query['phone'];
 $address = $query['address'];
-// if (isset($_SESSION['selectedProducts'])) {
-//   $selectedProducts = $_SESSION['selectedProducts'];
 
-// } else {
-//   header("Location: checkout.php");
-//   exit();
-// }
 if (isset($_GET['partnerCode'])) {
-	$code_order = rand(0, 999);
-	$partnerCode = $_GET['partnerCode'];
-	$orderId = $_GET['orderId'];
-	$amount = $_GET['amount'];
-	$orderInfo = $_GET['orderInfo'];
-	$orderType = $_GET['orderType'];
-	$transId = $_GET['transId'];
-	$payType = $_GET['payType'];
+    $code_order = rand(0, 999);
+    $partnerCode = $_GET['partnerCode'];
+    $orderId = $_GET['orderId'];
+    $amount = $_GET['amount'];
+    $orderInfo = $_GET['orderInfo'];
+    $orderType = $_GET['orderType'];
+    $transId = $_GET['transId'];
+    $payType = $_GET['payType'];
     $payment_method = "MOMO";
 
-
     $check_cart = executeResult("SELECT * FROM cart WHERE userid = {$query['id']}");
-    echo '<pre>';
-    print_r($check_cart);
-    echo '</pre>';
 
     execute("INSERT INTO orders (order_id, customer_name, email, phone_number, total_amount, order_date, status, delivery_address)
     VALUES ('$code_order', '$customer_name', '$email', '$phone_number', $amount, NOW(), 1, '$address')");
+
     foreach($check_cart as $cart){
         $pid = $cart['productid'];
         execute ("INSERT INTO order_details (order_id, payment_method, customer_name, customer_email, created_at, productid)
         VALUES ('$code_order','$payment_method', '$customer_name', '$customer_email', NOW(), $pid)");
+
+        // Thêm thông tin vào bảng "momo"
+        $insert_momo = "INSERT INTO momo(partner_Code, order_Id, amount, order_Info, order_Type, trans_Id, pay_Type, id_or) 
+        VALUES ('$partnerCode', '$orderId', '$amount', '$orderInfo', '$orderType', '$transId', '$payType', '$cart[cartid]')";
+        execute($insert_momo);
     }
+    exit();
 }
-exit();
-
-
-// 	$inset_momo = " insert into momo(partnerCode,orderId,amount,orderInfo,orderType,transId,payType,id) values ('" . $partnerCode . "','" . $orderId . "','" . $amount . "','" . $orderInfo . "'
-// ,'" . $orderType . "','" . $transId . "','" . $payType . "','" . $code_order . "')";
-
-// 	execute($inset_momo);
-
-
-	//  if (isset($_SESSION['email'])) {
-	//  	$eamil = $_SESSION['email'];
-	// 	$sql1 = 'select * from cart where sh_id= "' . $eamil . '"';
-	// 	$or_cart = executeResult($sql1);
-
-	//  	foreach ($or_cart as $cart) {
-	// 		$sh_id = $cart['sh_id'];
-	// 		$size = $cart['size'];
-	//  		$quantity = $cart['quantity'];
-	//  		$pr_id = $cart['pr_id'];
-
-	//  		$sql = 'insert into order_list(sh_id,pr_id,size,quantity,Time_Order) values ("' . $sh_id . '","' . $pr_id . '","' . $size . '","' . $quantity . '",now())';
-	//  		execute($sql);
-
-	//  		$update_quantity = 'UPDATE product_size SET quantity = quantity - ' . $quantity . ' WHERE pr_id = "' . $pr_id . '" AND size = "' . $size . '"';
-	//  		execute($update_quantity);
-	//  	}
-	//  	$sql2 = 'delete from cart where sh_id="' . $eamil . '"';
-	//  	execute($sql2);
-	//  }
-// }
 ?>
+
 <!doctype html>
 <html lang="zxx">
 <head>
@@ -200,55 +173,42 @@ exit();
 
 <!--================ confirmation part start =================-->
 <section class="confirmation_part section_padding">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12">
-        <div class="order_details_iner">
-          <h3>Order Details</h3>
-          <table class="table table-borderless">
-            <thead>
-              <tr>
-                <th scope="col" colspan="2">Product</th>
-                <th scope="col">Quantity</th>
-                <th scope="col">Total</th>
-                <th scope="col">Cancel Order</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php
-              if (isset($_SESSION['selectedProducts'])) {
-                $selectedProducts = $_SESSION['selectedProducts'];
-                foreach ($selectedProducts as $selectedProduct) {
-                  // Kiểm tra xem khóa 'image' có tồn tại hay không
-                  if (isset($selectedProduct['image'])) {
-                    $product = $selectedProduct['product'];
-                    $quantity = $selectedProduct['quantity'];
-                    $totalPrice = $product['price'] * $quantity;
-              ?>
-                  <tr>
-                    <td colspan="2"><?php echo $product['name']; ?></td>
-                    <td>x<?php echo $quantity; ?></td>
-                    <td><?php echo $totalPrice; ?>$</td>
-                    <td><a href="cancel_order.php?id=<?php echo $selectedProduct['id']; ?>">Cancel</a></td>
-                  </tr>
-              <?php
-                  }
-                }
-              }
-              ?>
-              
-              <tr>
-                <td colspan="3">Total</td>
-                <td>Total Price</td>
-              </tr>
-            </tbody>
-          </table>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="order_details_iner">
+                    <h3>Order Details</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Order ID</th>
+                                <th scope="col">Customer Name</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Delivery Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if ($confirmations != null) {
+                                foreach ($confirmations as $confirmation) {
+                                    ?>
+                                    <tr>
+                                        <td><?php echo $confirmation['order_id']; ?></td>
+                                        <td><?php echo $confirmation['product_name']; ?></td>
+                                        <td><?php echo $confirmation['quantity']; ?></td>
+                                        <td><?php echo $confirmation['delivery_address']; ?></td>
+                                    </tr>
+                            <?php
+                                }
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </section>
-
 <!--================ confirmation part end =================-->
 </main>
   <footer>
