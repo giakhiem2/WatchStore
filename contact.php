@@ -1,3 +1,15 @@
+<?php
+session_start();
+include 'config.php';
+require_once 'db/dbhelper.php';
+if (isset($_SESSION['SESSION_EMAIL'])) {
+    $email = $_SESSION['SESSION_EMAIL'];
+    $query = executeSingleResult("SELECT * FROM users WHERE email='$email'");
+    $id = $query['id'];
+  
+}
+
+?>
 <!doctype html>
 <html class="no-js" lang="zxx">
 
@@ -161,15 +173,15 @@
                                     <div class="form-group">
                                         <input class="form-control valid" name="name" id="name" type="text"
                                             onfocus="this.placeholder = ''"
-                                            onblur="this.placeholder = 'Enter your name'" placeholder="Enter your name">
+                                            onblur="this.placeholder = 'Enter your name'" placeholder="Enter your name" value="<?php if(isset($query)){echo $query['name'];} ?>" require>
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <input class="form-control valid" name="email" id="email" type="email"
                                             onfocus="this.placeholder = ''"
-                                            onblur="this.placeholder = 'Enter email address'" placeholder="Email">
-                                    </div>
+                                            onblur="this.placeholder = 'Enter email address'" placeholder="Email" value="<?php if(isset($query)){ echo $query['email'];} ?>" require>
+                                    </div>  
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group">
