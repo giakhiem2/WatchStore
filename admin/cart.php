@@ -1,7 +1,22 @@
 <?php
 require_once('../db/dbhelper.php');
-$sql = "SELECT * FROM `cart`";
+$sql = "SELECT productid, SUM(quantity) as total_quantity, price, MAX(created_at) as latest_created_at FROM `cart` GROUP BY productid";
 $carts = executeResult($sql);
+// Kiểm tra nếu có dữ liệu trong "cart"
+if ($carts) {
+    // Lặp qua từng bản ghi trong "cart"
+    foreach ($carts as $cart) {
+        // Lấy productid từ bản ghi hiện tại
+        $product_id = $cart['productid'];
+
+        // Thực hiện lệnh INSERT vào bảng "order_details" với thông tin từ "cart"
+        // ... (Thêm mã code thực hiện INSERT vào bảng "order_details" ở đây)
+
+        // Xóa bản ghi tương ứng trong bảng "cart" sau khi lên đơn hàng
+        $deleteSql = "DELETE FROM cart WHERE productid = '$product_id'";
+        execute($deleteSql);
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -65,37 +80,30 @@ $carts = executeResult($sql);
             <div class="col-sm-12">
                 <div class="card">
                 <div class="order-list">
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">cart ID</th>
-                <th scope="col">userid</th>
-                <th scope="col">productid</th>
-                <th scope="col">quantity</th>
-                <th scope="col">price</th>
-                <th scope="col">created_at</th>
-                <th scope="col">updated_at</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            if ($carts != null) {
-                foreach ($carts as $cart) {
-            ?>
-                    <tr>
-                        <td><?php echo $cart['cartid']; ?></td>
-                        <td><?php echo $cart['userid']; ?></td>
-                        <td><?php echo $cart['productid']; ?></td>
-                        <td><?php echo $cart['quantity']; ?></td>
-                        <td><?php echo $cart['price']; ?></td>
-                        <td><?php echo $cart['created_at']; ?></td>
-                        <td><?php echo $cart['updated_at']; ?></td>
-                        
-                    </tr>
-            <?php
-                }
-            }
-            ?>
+                <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Product ID</th>
+                                        <th scope="col">Total Quantity</th>
+                                        <th scope="col">Price</th>
+                                        <th scope="col">Latest Created At</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    if ($carts != null) {
+                                        foreach ($carts as $cart) {
+                                    ?>
+                                            <tr>
+                                                <td><?php echo $cart['productid']; ?></td>
+                                                <td><?php echo $cart['total_quantity']; ?></td>
+                                                <td><?php echo $cart['price']; ?></td>
+                                                <td><?php echo $cart['latest_created_at']; ?></td>
+                                            </tr>
+                                    <?php
+                                        }
+                                    }
+                                    ?>
         </tbody>
     </table>
 </div>

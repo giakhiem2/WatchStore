@@ -15,6 +15,8 @@ require_once '.././db/dbhelper.php';
             <li><a class="sidebar-header" href="category.php"><i data-feather="box"></i> <span>Category</span></a></li>
             <li><a class="sidebar-header" href="product.php"><i data-feather="box"></i> <span>Product</span></a></li>
             <li><a class="sidebar-header" href="order.php"><i data-feather="box"></i> <span>Order</span></a></li>
+            <li><a class="sidebar-header" href="view_order.php"><i data-feather="box"></i> <span>view order</span></a></li>
+            <li><a class="sidebar-header" href="order_details.php"><i data-feather="box"></i> <span>order details</span></a></li>
             <li><a class="sidebar-header" href="users.php"><i data-feather="box"></i> <span>Users</span></a></li>
             <li><a class="sidebar-header" href="coupon.php"><i data-feather="box"></i> <span>Coupon</span></a></li>
             <li><a class="sidebar-header" href="cart.php"><i data-feather="box"></i> <span>cart</span></a></li>

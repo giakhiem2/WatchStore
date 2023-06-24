@@ -25,19 +25,35 @@ if(isset($_GET['product'])){
     $check = executeSingleResult("SELECT * FROM product WHERE product_id = $product_id");
     $price = $check['price'];
     execute("INSERT INTO cart (userid, productid, quantity, price, created_at) VALUES ($id, $product_id, 1, $price, NOW())");
+    header('Location: cart.php');
+    exit;
 }
-if (isset($_POST['product']) && isset($_POST['quantity'])) {
-    // Trích xuất thông tin sản phẩm từ dữ liệu gửi đi
-    $product = json_decode($_POST['product'], true);
-    $quantity = $_POST['quantity'];
+if (isset($_POST['quantity'])) {
+    $quantities = $_POST['quantity'];
 
-    // Thực hiện xử lý tiếp theo, ví dụ: lưu thông tin sản phẩm vào giỏ hàng
-    // ...
+    // Lặp qua mảng số lượng và cập nhật giá trị số lượng cho từng sản phẩm trong giỏ hàng
+    foreach ($quantities as $product_id => $quantity) {
+        // Kiểm tra và xử lý số lượng theo nhu cầu của bạn
+        // ...
+    }
 
     // Chuyển hướng sau khi xử lý thành công
     header('Location: cart.php');
     exit();
 }
+
+// Kiểm tra xem có thông tin sản phẩm cần xóa không
+if (isset($_GET['remove_product'])) {
+    $remove_product_id = $_GET['remove_product'];
+    
+    // Thực hiện xóa sản phẩm khỏi giỏ hàng dựa trên product_id và userid
+    execute("DELETE FROM cart WHERE userid = $id AND productid = $remove_product_id");
+    
+    // Chuyển hướng lại trang giỏ hàng để cập nhật thông tin
+    header("Location: cart.php");
+    exit();
+}
+
 ?>
 
 <!doctype html>
@@ -194,85 +210,73 @@ if (isset($_POST['product']) && isset($_POST['quantity'])) {
 $carts = executeResult("SELECT * FROM cart WHERE userid = $id");
 
 // Tạo một mảng tạm để lưu trữ thông tin sản phẩm
-$mergedCarts = [];
+$Carts = [];
+
 // Gộp các sản phẩm có cùng product_id lại thành một sản phẩm duy nhất
 foreach ($carts as $cart) {
     $product_id = $cart['productid'];
     $quantity = $cart['quantity'];
     $price = $cart['price'];
 
-    // Kiểm tra xem sản phẩm đã được gộp hay chưa
+    // Kiểm tra xem sản phẩm đã tồn tại trong mảng tạm hay chưa
     $found = false;
-    foreach ($mergedCarts as &$mergedCart) {
-        if ($mergedCart['productid'] == $product_id) {
+    foreach ($Carts as &$Cart) {
+        if ($Cart['productid'] == $product_id) {
             // Sản phẩm đã tồn tại trong mảng tạm, tăng số lượng và giá tiền
-            $mergedCart['quantity'] += $quantity;
-            $mergedCart['price'] += $quantity * $price;
+            $Cart['quantity'] += $quantity;
+            $Cart['price'] += $quantity * $price;
             $found = true;
             break;
         }
     }
 
-    // Nếu sản phẩm chưa tồn tại, thêm vào mảng tạm
     if (!$found) {
-        $mergedCarts[] = [
+        // Thêm sản phẩm vào mảng tạm
+        $newItem = array(
             'productid' => $product_id,
             'quantity' => $quantity,
             'price' => $quantity * $price
-        ];
-    }if (isset($_GET['product'])) {
-        $product_id = $_GET['product'];
-        $existingCart = executeSingleResult("SELECT * FROM cart WHERE userid = $id AND productid = $product_id");
-        if (!$existingCart) {
-            $check = executeSingleResult("SELECT * FROM product WHERE product_id = $product_id");
-            if ($check) {
-                $price = $check['price'];
-                execute("INSERT INTO cart (userid, productid, quantity, price, created_at) VALUES ($id, $product_id, 1, $price, NOW())");
-            }
+        );
+        $Carts[] = $newItem;
+    }
+}
+
+// Kiểm tra xem giỏ hàng có sản phẩm hay không trước khi hiển thị thông tin
+if (!empty($Carts)) {
+    // Hiển thị thông tin sản phẩm đã gộp trong bảng
+    foreach ($Carts as $index => $Cart) {
+        $product_id = $Cart['productid'];
+        $quantity = $Cart['quantity'];
+        $totalPrice = $Cart['price'];
+
+        // Kiểm tra xem sản phẩm đã tồn tại trong cơ sở dữ liệu hay không
+        $product = executeSingleResult("SELECT * FROM product WHERE product_id = $product_id");
+
+        if ($product) {
+            // Hiển thị thông tin sản phẩm
+            ?>
+            <tr>
+                <td>
+                    <?php if (isset($product['image'])) : ?>
+                        <img src="image/<?php echo $product['image']; ?>" width="50px" height="50px" style="border-radius: 50px;" alt="">
+                    <?php endif; ?>
+                </td>
+                <td><?php echo $product['price']; ?>$</td>
+                <td>
+                    <input type="number" value="<?php echo $quantity; ?>" min="1" max="<?php echo $product['quantity']; ?>" name="quantity[<?php echo $product_id; ?>]" id="quantity-<?php echo $product_id; ?>" data-index="<?php echo $product_id; ?>" onchange="updateTotal(this)">
+                </td>
+                <td id="totalPrice-<?php echo $index; ?>"><?php echo $totalPrice; ?>$</td>
+                <td>
+                    <a href="cart.php?remove_product=<?php echo $product_id; ?>" class="btn_1">Remove</a>
+                </td>
+            </tr>
+            <?php
         }
-    }// Kiểm tra xem có thông tin sản phẩm cần xóa không
-if (isset($_GET['remove_product'])) {
-    $remove_product_id = $_GET['remove_product'];
-    // Thực hiện xóa sản phẩm khỏi giỏ hàng dựa trên product_id
-    execute("DELETE FROM cart WHERE userid = $id AND productid = $remove_product_id");
-    // Chuyển hướng lại trang giỏ hàng để cập nhật thông tin
-    echo "<script>window.location.href = 'cart.php';</script>";
-exit();
-
-}
-    
-}
-
-// Hiển thị thông tin sản phẩm đã gộp trong bảng
-foreach ($mergedCarts as $index => $mergedCart) {
-    $product_id = $mergedCart['productid'];
-    $quantity = $mergedCart['quantity'];
-    $totalPrice = $mergedCart['price'];
-
-    // Lấy thông tin sản phẩm từ product_id
-    $product = executeSingleResult("SELECT * FROM product WHERE product_id = $product_id");
-
-    ?>
-    <tr>
-        <td>
-            <?php if (isset($product['image'])) : ?>
-                <img src="image/<?php echo $product['image']; ?>" width="50px" height="50px" style="border-radius: 50px;" alt="">
-            <?php endif; ?>
-        </td>
-        <td><?php echo $product['price']; ?>$</td>
-        <td>
-            <input type="number" value="<?php echo $quantity; ?>" min="1" max="<?php echo $product['quantity']; ?>" name="quantity" id="quantity-<?php echo $index; ?>" data-index="<?php echo $index; ?>" onchange="updateTotal(this)">
-        </td>
-        <td id="totalPrice-<?php echo $index; ?>"><?php echo $totalPrice; ?>$</td>
-        <!-- Modify the "Remove" button in the table to include the product ID -->
-        <td>
-            <a href="cart.php?remove_product=<?php echo $product_id; ?>" class="btn_1">Remove</a>
-        </td>
-    </tr>
-    <?php
+    }
 }
 ?>
-        
+
+
                     </tbody>
                     </table>
             </div>

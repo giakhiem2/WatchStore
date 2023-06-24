@@ -1,7 +1,7 @@
 <?php
 require_once('../db/dbhelper.php');
-$sql = "SELECT * FROM `orders`";
-$orders = executeResult($sql);
+$sql = "SELECT * FROM `order_details`";
+$order_detailss = executeResult($sql);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -65,7 +65,7 @@ $orders = executeResult($sql);
             <div class="col-sm-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Orders</h5>
+                        <h5>view_order</h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -74,34 +74,32 @@ $orders = executeResult($sql);
                                     <thead>
                                         <tr>
                                             <th scope="col">Order ID</th>
-                                            <th scope="col">Customer Name</th>
-                                            <th scope="col">Email</th>
-                                            <th scope="col">Phone Number</th>
+                                            <th scope="col">product_id </th>
+                                            <th scope="col">image</th>
+                                            <th scope="col">quantity</th>
+                                            <th scope="col">price</th>
                                             <th scope="col">Order Date</th>
                                             <th scope="col">Status</th>
+                                            
                                             <th scope="col">Delivery Address</th>
-                                            <th scope="col">Action</th> <!-- Thêm cột Action -->
                                         </tr>
                                     </thead>
                                     <tbody>
     <?php
-    if ($orders != null) {
-        foreach ($orders as $order) {
+    if ($order_detailss != null) {
+        foreach ($order_detailss as $order_details) {
     ?>
         <tr>
-            <td><?php echo $order['order_id']; ?></td>
-            <td><?php echo $order['customer_name']; ?></td>
-            <td><?php echo $order['email']; ?></td>
-            <td><?php echo $order['phone_number']; ?></td>
-            <td><?php echo $order['order_date']; ?></td>
-            <td><?php echo $order['status']; ?></td>
-            <td><?php echo $order['delivery_address']; ?></td>
-            <td>
-            <a href="view_order.php?order_id=<?php echo $order['order_id']; ?>">View Order</a>
-
-
-
-                    </td> <!-- Thêm nút View Order -->
+            <td><?php echo $order_details['order_id']; ?></td>
+            <td><?php echo $order_details['product_id']; ?></td>
+            <td scope="row">
+            <img src="<?php echo $order_details['image']; ?>" width="50px" height="50px" style="border-radius:50px;" alt="">
+            </td>
+            <td><?php echo $order_details['quantity']; ?></td>
+            <td><?php echo $order_details['price']; ?></td>
+            <td><?php echo $order_details['order_date']; ?></td>
+            <td><?php echo $order_details['status']; ?></td>
+            <td><?php echo $order_details['delivery_address']; ?></td>
 
         </tr>
     <?php
