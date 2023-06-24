@@ -1,5 +1,8 @@
 <?php
+
 use PHPMailer\PHPMailer\PHPMailer;
+
+
 
 if(isset($_POST['name']) && isset($_POST['email'])){
     $name = $_POST['name'];
@@ -44,20 +47,22 @@ if(isset($_POST['name']) && isset($_POST['email'])){
     $conn = new mysqli($servername, $username, $password, $dbname);
 
     // Chuẩn bị và thực thi câu lệnh INSERT
-    $stmt = $conn->prepare("INSERT INTO contacts (name, email, subject, body) VALUES (?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO contact (name, email, subject, body) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("ssss", $name, $email, $subject, $body);
     $stmt->execute();
 
     // Đóng câu lệnh và kết nối cơ sở dữ liệu
     $stmt->close();
     $conn->close();
-}else
-    {
-        $status = "failed";
-        $response = "Something is wrong: <br>" . $mail->ErrorInfo;
-    }
+// Redirect to another page
+header("Location: contact.php");
+exit();
+} else {
+$status = "failed";
+$response = "Something is wrong: <br>" . $mail->ErrorInfo;
+}
 
-    exit(json_encode(array("status" => $status, "response" => $response)));
+exit(json_encode(array("status" => $status, "response" => $response)));
 }
 
 ?>

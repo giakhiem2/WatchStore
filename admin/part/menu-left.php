@@ -18,12 +18,14 @@ require_once '.././db/dbhelper.php';
             <li><a class="sidebar-header" href="users.php"><i data-feather="box"></i> <span>Users</span></a></li>
             <li><a class="sidebar-header" href="coupon.php"><i data-feather="box"></i> <span>Coupon</span></a></li>
             <li><a class="sidebar-header" href="cart.php"><i data-feather="box"></i> <span>cart</span></a></li>
+            <li><a class="sidebar-header" href="mess.php"><i data-feather="box"></i> <span>Message</span></a></li>
 
             <?php
                 if($role == 1){
                    echo '<li><a class="sidebar-header" href="account.php"><i data-feather="box"></i> <span>Account</span></a></li>';
                 }    
             ?>
+
         </ul>
     </div>
 </div>
