@@ -11,13 +11,13 @@ $msg = "";
 if (isset($_GET['verification'])) {
     if (mysqli_num_rows(mysqli_query($conn, "SELECT * FROM users WHERE code='{$_GET['verification']}'")) > 0) {
         $sql = "UPDATE users SET code='' WHERE code='{$_GET['verification']}'";
-      
+
         $query = mysqli_query($conn, "UPDATE users SET code='' WHERE code='{$_GET['verification']}'");
 
         if ($query) {
             //viet cau lenh update xoa o code
             //$query = mysqli_query($conn, "UPDATE users SET code='' WHERE email='{$email}'");
-            $msg = "<div class='alert alert-success'>Account verification has been successfully completed.</div>";
+            $msg = "<div class='alert alert-success'>Account có verification has been successfully completed.</div>";
         }
     } else {
         header("Location: index.php");
@@ -42,6 +42,7 @@ if (isset($_POST['submit'])) {
                 header("Location: admin/index.php");
                 die();
             } else {
+                setcookie("TestCookie", $email);
                 header("Location: index.php");
                 die();
             }
@@ -81,45 +82,45 @@ if (isset($_POST['submit'])) {
     <link rel="stylesheet" href="./assets/css/nice-select.css">
     <link rel="stylesheet" href="./assets/css/style.css">
     <style>
-    .nav-search {
-        position: relative;
-    }
+        .nav-search {
+            position: relative;
+        }
 
-    .nav-search input[type="text"] {
-        width: 0;
-        opacity: 0;
-        transition: width 0.5s ease, opacity 0.5s ease;
-        position: absolute;
-        top: 0;
-        right: 0;
-        padding: 5px;
-        border-radius: 5px;
-    }
+        .nav-search input[type="text"] {
+            width: 0;
+            opacity: 0;
+            transition: width 0.5s ease, opacity 0.5s ease;
+            position: absolute;
+            top: 0;
+            right: 0;
+            padding: 5px;
+            border-radius: 5px;
+        }
 
-    .nav-search .flaticon-search {
-        cursor: pointer;
-    }
+        .nav-search .flaticon-search {
+            cursor: pointer;
+        }
 
-    .nav-search:hover input[type="text"] {
-        width: 200px;
-        opacity: 1;
-    }
-</style>
+        .nav-search:hover input[type="text"] {
+            width: 200px;
+            opacity: 1;
+        }
+    </style>
 </head>
 <style>
-/* hide passowrd */
-.field-icon {
-    float: right;
-    margin-left: -25px;
-    margin-top: -25px;
-    position: relative;
-    z-index: 2;
-}
+    /* hide passowrd */
+    .field-icon {
+        float: right;
+        margin-left: -25px;
+        margin-top: -25px;
+        position: relative;
+        z-index: 2;
+    }
 
-.container {
-    padding-top: 50px;
-    margin: auto;
-}
+    .container {
+        padding-top: 50px;
+        margin: auto;
+    }
 </style>
 
 <body>
@@ -168,7 +169,7 @@ if (isset($_POST['submit'])) {
                         <!-- Header Right -->
                         <div class="header-right">
                             <ul>
-                            <li>
+                                <li>
                                     <div class="nav-search">
                                         <form id="search-form" action="search.php" method="GET">
                                             <span class="flaticon-search"></span>
@@ -228,14 +229,11 @@ if (isset($_POST['submit'])) {
                                 <?php echo $msg; ?>
                                 <form class="row contact_form" action="" method="post">
                                     <div class="col-md-12 form-group p_star">
-                                        <input type="text" class="form-control" id="name" name="email" value=""
-                                            placeholder="Email">
+                                        <input type="text" class="form-control" id="name" name="email" value="" placeholder="Email">
                                     </div>
                                     <div class="col-md-12 form-group p_star">
-                                        <input id="password-field" type="password" class="form-control" name="password"
-                                            value="" placeholder="password">
-                                        <span toggle="#password-field"
-                                            class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                        <input id="password-field" type="password" class="form-control" name="password" value="" placeholder="password">
+                                        <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
                                     </div>
                                     <div class="col-md-12 form-group">
 
@@ -324,10 +322,8 @@ if (isset($_POST['submit'])) {
                             <p>
                                 <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                                 Copyright &copy;<script>
-                                document.write(new Date().getFullYear());
-                                </script> All rights reserved | This template is made with <i class="fa fa-heart"
-                                    aria-hidden="true"></i> by <a href="https://colorlib.com"
-                                    target="_blank">Colorlib</a>
+                                    document.write(new Date().getFullYear());
+                                </script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
                                 <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                             </p>
                         </div>
@@ -395,22 +391,26 @@ if (isset($_POST['submit'])) {
     <script src="./assets/js/main.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script>
-    $(".toggle-password").click(function() {
+        $(".toggle-password").click(function() {
 
-        $(this).toggleClass("fa-eye fa-eye-slash");
-        var input = $($(this).attr("toggle"));
-        if (input.attr("type") == "password") {
-            input.attr("type", "text");
-        } else {
-            input.attr("type", "password");
+            $(this).toggleClass("fa-eye fa-eye-slash");
+            var input = $($(this).attr("toggle"));
+            if (input.attr("type") == "password") {
+                input.attr("type", "text");
+            } else {
+                input.attr("type", "password");
+            }
+        });
+
+        function onLogin() {
+            localStorage.setItem("avatar", "isLogin-true")
         }
-    });
-
-    function onLogin() {
-        localStorage.setItem("avatar", "isLogin-true")
-    }
     </script>
 
 </body>
+
+<script>
+
+</script>
 
 </html>

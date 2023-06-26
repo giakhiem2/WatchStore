@@ -7,6 +7,19 @@ if (isset($_GET['id'])) {
     $sql = "SELECT * FROM category JOIN product ON product.category_id = category.category_id WHERE category.category_id = $category_id ORDER BY category.category_id DESC";
     $products = executeResult($sql);
 }
+
+function onAddToCart($linkProduct)
+{
+    if (isset($_COOKIE["TestCookie"])) {
+        header("Location: cart.php?product=<?php echo $linkProduct ?>");
+} else {
+header("Location: login.php");
+}
+}
+
+if (isset($_GET['hello'])) {
+onAddToCart(isset($_GET['hello']));
+}
 ?>
 
 <!doctype html>
@@ -57,7 +70,7 @@ if (isset($_GET['id'])) {
         width: 200px;
         opacity: 1;
     }
-</style>
+    </style>
 </head>
 
 <body>
@@ -118,11 +131,12 @@ if (isset($_GET['id'])) {
                         <!-- Header Right -->
                         <div class="header-right">
                             <ul>
-                            <li>
+                                <li>
                                     <div class="nav-search">
                                         <form id="search-form" action="search.php" method="GET">
                                             <span class="flaticon-search"></span>
-                                            <input type="text" id="search-input" name="keyword" placeholder="Tìm kiếm sản phẩm">
+                                            <input type="text" id="search-input" name="keyword"
+                                                placeholder="Tìm kiếm sản phẩm">
                                         </form>
                                     </div>
                                 </li>
@@ -161,11 +175,12 @@ if (isset($_GET['id'])) {
             <div class="container">
                 <div class="row product-btn justify-content-between mb-40">
                     <div class="properties__button">
+
                         <nav>
                             <div class="nav nav-tabs" id="nav-tab" role="tablist">
                                 <?php
                                 $defaultCategory = null;
-                                usort($categorys, function($a, $b) {
+                                usort($categorys, function ($a, $b) {
                                     return $a['category_id'] - $b['category_id'];
                                 });
                                 if ($categorys != null) {
@@ -174,7 +189,9 @@ if (isset($_GET['id'])) {
                                             $defaultCategory = $cate['category_id'];
                                         }
                                 ?>
-                                        <a class="nav-item nav-link<?php echo ($key === 0) ? ' active' : ''; ?>" data-toggle="tab" href="#category-<?php echo $cate['category_id']; ?>"><?php echo $cate['category_name']; ?></a>
+                                <a class="nav-item nav-link<?php echo ($key === 0) ? ' active' : ''; ?>"
+                                    data-toggle="tab"
+                                    href="#category-<?php echo $cate['category_id']; ?>"><?php echo $cate['category_name']; ?></a>
 
                                 <?php
                                     }
@@ -196,31 +213,41 @@ if (isset($_GET['id'])) {
                                 $sql = "SELECT * FROM product WHERE category_id = $category_id";
                                 $products = executeResult($sql);
                         ?>
-                                <div class="tab-pane fade<?php echo ($key === 0) ? ' show active' : ''; ?>" id="category-<?php echo $cate['category_id']; ?>" role="tabpanel">
-                                    <div class="grid-list-view">
-                                        <div class="row">
-                                            <?php foreach ($products as $product) { ?>
-                                                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
-                                                    <div class="single-popular-items mb-50 text-center">
-                                                        <div class="popular-img">
-                                                            <img src="image/<?php echo $product['image']; ?>" alt="">
-                                                            <div class="img-cap">
-                                                            <span><a href="cart.php?product=<?php echo $product['product_id'] ?>">Add to Cart</a></span></span>
-                                                            </div>
-                                                            <div class="favorit-items">
-                                                                <span class="flaticon-heart"></span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="popular-caption">
-                                                            <h3><a href="product_details.php?id=<?php echo $product['product_id']?>"><?php echo $product['product_name']; ?></a></h3>
-                                                            <span><?php echo $product['price']; ?>$</span>
-                                                        </div>
-                                                    </div>
+                        <div class="tab-pane fade<?php echo ($key === 0) ? ' show active' : ''; ?>"
+                            id="category-<?php echo $cate['category_id']; ?>" role="tabpanel">
+                            <div class="grid-list-view">
+                                <div class="row">
+                                    <?php foreach ($products as $product) { ?>
+                                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6">
+                                        <div class="single-popular-items mb-50 text-center">
+                                            <div class="popular-img">
+                                                <img src="image/<?php echo $product['image']; ?>" alt="">
+                                                <div class="img-cap">
+                                                    <span>
+                                                        <a href='shop.php?hello=<?php echo $product['product_id'] ?>'>Add
+                                                            to Cart</a>
+                                                        <!-- <div onclick=" onAddToCart()">
+                                                            Add to Cart
+                                                </div> -->
+                                                    </span></span>
                                                 </div>
-                                            <?php } ?>
+                                                <div class="favorit-items">
+                                                    <span class="flaticon-heart"></span>
+                                                </div>
+                                            </div>
+                                            <div class="popular-caption">
+                                                <h3><a
+                                                        href="product_details.php?id=<?php echo $product['product_id'] ?>">
+                                                        <?php echo $product['product_name']; ?></a>
+                                                </h3>
+                                                <span><?php echo $product['price']; ?>$</span>
+                                            </div>
                                         </div>
                                     </div>
+                                    <?php } ?>
                                 </div>
+                            </div>
+                        </div>
                         <?php
                             }
                         }
@@ -330,8 +357,10 @@ if (isset($_GET['id'])) {
                             <p>
                                 <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                                 Copyright &copy;<script>
-                                    document.write(new Date().getFullYear());
-                                </script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                                document.write(new Date().getFullYear());
+                                </script> All rights reserved | This template is made with <i class="fa fa-heart"
+                                    aria-hidden="true"></i> by <a href="https://colorlib.com"
+                                    target="_blank">Colorlib</a>
                                 <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                             </p>
                         </div>

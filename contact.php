@@ -9,6 +9,24 @@ if (isset($_SESSION['SESSION_EMAIL'])) {
   
 }
 
+
+?>
+<?php
+if(isset($_POST['g-recaptcha-response'])){
+    $secreatkey = "6LdZl80mAAAAAP3WVnY7CPdFN8kQiLWNdBiRX7k0";
+    $ip = $_SERVER['REMOTE_ADRR'];
+    $response = $_POST['g-recaptcha-respose'];
+    $url = "https://www.google.com/recaptcha/api/siteverify?secret=$secreatkey&response=$response&remoteip=$ip";
+    $fire = file_get_contents($url);
+    $data = json_decode($fire);
+    if($data->success==true){
+        echo "success";
+    }else{
+        echo "please fill recaptcha";
+    }
+}else{
+    echo "Recaptcha Error";
+}
 ?>
 <!doctype html>
 <html class="no-js" lang="zxx">
@@ -17,6 +35,7 @@ if (isset($_SESSION['SESSION_EMAIL'])) {
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Watch shop | eCommers</title>
+
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="manifest" href="site.webmanifest">
@@ -34,6 +53,7 @@ if (isset($_SESSION['SESSION_EMAIL'])) {
     <link rel="stylesheet" href="assets/css/slick.css">
     <link rel="stylesheet" href="assets/css/nice-select.css">
     <link rel="stylesheet" href="assets/css/style.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
     .nav-search {
         position: relative;
@@ -166,7 +186,7 @@ if (isset($_SESSION['SESSION_EMAIL'])) {
                         <h2 class="contact-title">Get in Touch</h2>
                     </div>
                     <div class="col-lg-8">
-                        <form class="form-contact contact_form" method="post" id="myForm">
+                        <form class=" form-contact contact_form" method="post" id="myForm">
                             <div class="row">
 
                                 <div class="col-sm-6">
@@ -199,6 +219,7 @@ if (isset($_SESSION['SESSION_EMAIL'])) {
                                     </div>
                                 </div>
                             </div>
+                            <div class="g-recaptcha" data-sitekey="6LdZl80mAAAAANYeOVbX_06SoksPL7B34QCjw8F5"></div>
                             <div class="form-group mt-3">
                                 <button type="button" class="button button-contactForm boxed-btn" onclick="sendEmail()"
                                     value="Send An Email">Send</button>
