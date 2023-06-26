@@ -15,7 +15,7 @@ if (isset($_POST['coupon_id'])) {
         if ($currentDate >= $startDate && $currentDate <= $endDate) {
             echo "Valid";
         } else {
-            echo "Invalid";
+            echo "expired";
         }
     } else {
         echo "Not found";

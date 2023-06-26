@@ -87,6 +87,7 @@ $coupons = executeResult($sql);
                                                     <tr>
                                                         <th scope="col">Coupon ID</th>
                                                         <th scope="col">CouponCode</th>
+                                                        <th scope="col">Coupon Type</th>
                                                         <th scope="col">Discount</th>
                                                         <th scope="col">Quantity</th>
                                                         <th scope="col">Status</th>
@@ -104,8 +105,8 @@ $coupons = executeResult($sql);
                                                             <tr>
 
                                                                 <td><?php echo $cp['coupon_id']; ?></td>
-
                                                                 <td><?php echo $cp['coupon_code']; ?></td>
+                                                                <td><?php echo $cp['coupon_type']; ?></td> 
                                                                 <td><?php echo $cp['discount']; ?></td>
                                                                 <td><?php echo $cp['quantity']; ?></td>
                                                                 <td class="status" data-coupon-id="<?php echo $cp['coupon_id']; ?>"></td>

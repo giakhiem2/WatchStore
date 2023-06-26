@@ -34,6 +34,8 @@ if (isset($_GET['partnerCode'])) {
         execute ("INSERT INTO order_details (order_id, payment_method, customer_name, customer_email, created_at, productid)
         VALUES ('$code_order','$payment_method', '$customer_name', '$customer_email', NOW(), $pid)");
 
+        
+
         // Thêm thông tin vào bảng "momo"
         $insert_momo = "INSERT INTO momo(partner_Code, order_Id, amount, order_Info, order_Type, trans_Id, pay_Type, id_or) 
         VALUES ('$partnerCode', '$orderId', '$amount', '$orderInfo', '$orderType', '$transId', '$payType', '$cart[cartid]')";

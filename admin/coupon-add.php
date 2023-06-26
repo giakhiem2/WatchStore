@@ -66,9 +66,31 @@ require_once('../db/dbhelper.php');
                     
                     <div class="form-group">
                         <label for="exampleInputPassword1">Coupon Code</label>
-                        <input type="text" class="form-control" id="couponInput" name="coupon_code"  readonly="readonly">
-                        <br>
-                        <button id="generate" class="btn btn-success" type="button"><span class="glyphicon glyphicon-random"></span> Generate</button>
+                        <input type="text" class="form-control" id="couponInput" name="coupon_code"  >
+                    </div>
+                    <div class="form-group" >
+                    <label for="exampleInputPassword1">Coupon Type</label>
+                        <select name="coupon_type" class="form-control">
+                        <option value="">Select</option>
+                        <?php
+                        if($coupon_type == 'Percentage'){
+                            echo'<option value="Percentage" selected>Percentage</option>
+                                <option value="Dollar">Dollar</option>';
+                        }elseif($coupon_type == 'Dollar'){
+                            echo '<option
+                            value="Percentage">Percentage</option>
+                                <option value="Dollar" selected>Dollar</option>';
+                        }else{
+                            echo '<option
+                            value="Percentage">Percentage</option>
+                                <option value="Dollar">Dollar</option>';
+                        }
+                        ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">CartMinValue</label>
+                        <input type="number" class="form-control" name="cart_min_value" >
                     </div>
                     <div class="form-group">
                         <label for="exampleInputPassword1">Discount</label>
@@ -78,10 +100,7 @@ require_once('../db/dbhelper.php');
                         <label for="exampleInputPassword1">Quantity</label>
                         <input type="number" class="form-control" name="quantity" >
                     </div>
-                    <div class="form-group">
-                        <label for="exampleInputPassword1">Status</label>
-                        <input type="number" class="form-control" name="status" >
-                    </div>
+                    
                     <div class="form-group">
                         <label for="exampleInputPassword1">Started</label>
                         <input type="date" class="form-control" name="started" >
