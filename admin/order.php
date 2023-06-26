@@ -70,46 +70,42 @@ $orders = executeResult($sql);
                     <div class="card-body">
                         <div class="table-responsive">
                             <div class="order-list">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Order ID</th>
-                                            <th scope="col">Customer Name</th>
-                                            <th scope="col">Email</th>
-                                            <th scope="col">Phone Number</th>
-                                            <th scope="col">Order Date</th>
-                                            <th scope="col">Status</th>
-                                            <th scope="col">Delivery Address</th>
-                                            <th scope="col">Action</th> <!-- Thêm cột Action -->
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-    <?php
-    if ($orders != null) {
-        foreach ($orders as $order) {
-    ?>
+                            <table class="table">
+    <thead>
         <tr>
-            <td><?php echo $order['order_id']; ?></td>
-            <td><?php echo $order['customer_name']; ?></td>
-            <td><?php echo $order['email']; ?></td>
-            <td><?php echo $order['phone_number']; ?></td>
-            <td><?php echo $order['order_date']; ?></td>
-            <td><?php echo $order['status']; ?></td>
-            <td><?php echo $order['delivery_address']; ?></td>
-            <td>
-            <a href="view_order.php?order_id=<?php echo $order['order_id']; ?>">View Order</a>
-
-
-
-                    </td> <!-- Thêm nút View Order -->
-
+            <th scope="col">Order ID</th>
+            <th scope="col">Customer Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Phone Number</th>
+            <th scope="col">Order Date</th>
+            <th scope="col">Status</th>
+            <th scope="col">Delivery Address</th>
+            <th scope="col">Action</th> <!-- Thêm cột Action -->
         </tr>
-    <?php
+    </thead>
+    <tbody>
+        <?php
+        if ($orders != null) {
+            foreach ($orders as $order) {
+        ?>
+                <tr>
+                    <td><?php echo $order['order_id']; ?></td>
+                    <td><?php echo $order['customer_name']; ?></td>
+                    <td><?php echo $order['email']; ?></td>
+                    <td><?php echo $order['phone_number']; ?></td>
+                    <td><?php echo $order['order_date']; ?></td>
+                    <td><?php echo $order['status']; ?></td>
+                    <td><?php echo $order['delivery_address']; ?></td>
+                    <td>
+                        <a href="view_order.php?order_id=<?php echo $order['order_id']; ?>">View Order</a>
+                    </td> <!-- Thêm nút View Order -->
+                </tr>
+        <?php
+            }
         }
-    }
-    ?>
-</tbody>
-                                </table>
+        ?>
+    </tbody>
+</table>
                             </div>
                         </div>
                     </div>

@@ -1,6 +1,10 @@
 <?php
 require_once('../db/dbhelper.php');
-$sql = "SELECT * FROM `order_details`";
+
+// Truy vấn dữ liệu từ bảng orders và order_details
+$sql = "SELECT orders.order_id, orders.order_date, orders.customer_id, orders.total_amount, order_details.product_id, order_details.quantity
+        FROM orders
+        INNER JOIN order_details ON orders.order_id = order_details.order_id";
 $order_details = executeResult($sql);
 ?>
 <!DOCTYPE html>
@@ -70,51 +74,44 @@ $order_details = executeResult($sql);
                     <div class="card-body">
                         <div class="table-responsive">
                             <div class="order-list">
-                                <table class="table">
-                                    <thead>
-                                        <tr>
-                                        <th scope="col">Order ID</th>
-                                            <th scope="col">Product ID</th>
-                                            <th scope="col">Product Name</th>
-                                            <th scope="col">Image</th>
-                                            <th scope="col">Quantity</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    <?php
-    if ($order_details != null) {
-        foreach ($order_details as $order_detail) {
-            $product_id = $order_detail['product_id'];
+                            <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Order ID</th>
+                                <th scope="col">Product ID</th>
+                                <th scope="col">Product Name</th>
+                                <th scope="col">Image</th>
+                                <th scope="col">Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if ($order_details != null) {
+                                foreach ($order_details as $order_detail) {
+                                    $order_id = $order_detail['order_id'];
+                                    $product_id = $order_detail['product_id'];
 
-            // Truy vấn dữ liệu từ bảng product dựa trên product_id
-            $sql = "SELECT * FROM product WHERE product_id = '$product_id'";
-            $product = executeSingleResult($sql);
+                                    // Truy vấn dữ liệu từ bảng product dựa trên product_id
+                                    $sql = "SELECT * FROM product WHERE product_id = '$product_id'";
+                                    $product = executeSingleResult($sql);
 
-            // Kiểm tra và hiển thị thông tin sản phẩm
-            if ($product) {
-                $product_name = $product['product_name'];
-                $image = $product['image'];
-                $quantity = $product['quantity'];
+                                    // Kiểm tra và hiển thị thông tin sản phẩm
+                                    if ($product) {
+                                        $product_name = $product['product_name'];
+                                        $image = $product['image'];
 
-                // Hiển thị các thông tin khác về sản phẩm
-                // Ví dụ: $product['price'], $product['brand'], vv.
-                
-                echo '<tr>';
-                echo '<td>'.$order_detail['order_id'].'</td>';
-                echo '<td>'.$order_detail['product_id'].'</td>';
-                echo '<td>'.$product_name.'</td>';
-                echo '<td><img src="'.$image.'" alt="Product Image" style="width: 100px;"></td>';
-
-                echo '<td>'.$quantity.'</td>'; 
-                // Hiển thị các thông tin khác về sản phẩm
-
-                echo '</tr>';
-            }
-        }
-    }
-    ?>
-</tbody>
-                                </table>
+                                        echo '<tr>';
+                                        echo '<td>' . $order_id . '</td>';
+                                        echo '<td>' . $product_id . '</td>';
+                                        echo '<td>' . $product_name . '</td>';
+                                        echo '<td><img src="' . $image . '" alt="Product Image" style="width: 100px;"></td>';
+                                        echo '</tr>';
+                                    }
+                                }
+                            }
+                            ?>
+                        </tbody>
+                    </table>
                             </div>
                         </div>
                     </div>

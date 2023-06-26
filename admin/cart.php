@@ -2,21 +2,6 @@
 require_once('../db/dbhelper.php');
 $sql = "SELECT productid, SUM(quantity) as total_quantity, price, MAX(created_at) as latest_created_at FROM `cart` GROUP BY productid";
 $carts = executeResult($sql);
-// Kiểm tra nếu có dữ liệu trong "cart"
-if ($carts) {
-    // Lặp qua từng bản ghi trong "cart"
-    foreach ($carts as $cart) {
-        // Lấy productid từ bản ghi hiện tại
-        $product_id = $cart['productid'];
-
-        // Thực hiện lệnh INSERT vào bảng "order_details" với thông tin từ "cart"
-        // ... (Thêm mã code thực hiện INSERT vào bảng "order_details" ở đây)
-
-        // Xóa bản ghi tương ứng trong bảng "cart" sau khi lên đơn hàng
-        $deleteSql = "DELETE FROM cart WHERE productid = '$product_id'";
-        execute($deleteSql);
-    }
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -104,8 +89,8 @@ if ($carts) {
                                         }
                                     }
                                     ?>
-        </tbody>
-    </table>
+                                </tbody>
+                            </table>
 </div>
 
     <!-- Container-fluid Ends-->

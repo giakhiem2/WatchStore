@@ -1,8 +1,4 @@
-<?php
-require_once('../db/dbhelper.php');
-$sql = "SELECT * FROM `order_details`";
-$order_detailss = executeResult($sql);
-?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -74,38 +70,35 @@ $order_detailss = executeResult($sql);
                                     <thead>
                                         <tr>
                                             <th scope="col">Order ID</th>
-                                            <th scope="col">product_id </th>
-                                            <th scope="col">image</th>
-                                            <th scope="col">quantity</th>
-                                            <th scope="col">price</th>
-                                            <th scope="col">Order Date</th>
-                                            <th scope="col">Status</th>
-                                            
-                                            <th scope="col">Delivery Address</th>
+                                            <th scope="col">Handle </th>
                                         </tr>
                                     </thead>
                                     <tbody>
-    <?php
-    if ($order_detailss != null) {
-        foreach ($order_detailss as $order_details) {
-    ?>
+                                    <?php
+if ($orders != null) {
+    foreach ($orders as $order) {
+?>
         <tr>
-            <td><?php echo $order_details['order_id']; ?></td>
-            <td><?php echo $order_details['product_id']; ?></td>
-            <td scope="row">
-            <img src="<?php echo $order_details['image']; ?>" width="50px" height="50px" style="border-radius:50px;" alt="">
+            <td><?php echo $order['order_id']; ?></td>
+            <td>
+                <div class="btn-group" role="group" aria-label="Order actions">
+                    <button type="button" class="btn btn-success">Xác nhận</button>
+                    <button type="button" class="btn btn-danger">Hủy</button>
+                </div>
             </td>
-            <td><?php echo $order_details['quantity']; ?></td>
-            <td><?php echo $order_details['price']; ?></td>
-            <td><?php echo $order_details['order_date']; ?></td>
-            <td><?php echo $order_details['status']; ?></td>
-            <td><?php echo $order_details['delivery_address']; ?></td>
-
         </tr>
-    <?php
-        }
+<?php
     }
-    ?>
+}
+?>
+</tbody>
+</table>
+
+<div class="btn-group" role="group" aria-label="Order actions">
+    <button type="button" class="btn btn-success">Xác nhận</button>
+    <button type="button" class="btn btn-danger">Hủy</button>
+</div>
+
 </tbody>
                                 </table>
                             </div>

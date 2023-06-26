@@ -1,7 +1,7 @@
 <?php
 require_once('db/dbhelper.php');
-$sql = "SELECT * FROM `confirmation`";
-$confirmations = executeResult($sql);
+$sql = "SELECT * FROM `order_details`";
+$order_details = executeResult($sql);
 ?>
 <?php
 require_once('db/dbhelper.php');
@@ -181,31 +181,49 @@ if (isset($_GET['partnerCode'])) {
                 <div class="order_details_iner">
                     <h3>Order Details</h3>
                     <table class="table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Order ID</th>
-                                <th scope="col">Customer Name</th>
-                                <th scope="col">Quantity</th>
-                                <th scope="col">Delivery Address</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            if ($confirmations != null) {
-                                foreach ($confirmations as $confirmation) {
-                                    ?>
-                                    <tr>
-                                        <td><?php echo $confirmation['order_id']; ?></td>
-                                        <td><?php echo $confirmation['product_name']; ?></td>
-                                        <td><?php echo $confirmation['quantity']; ?></td>
-                                        <td><?php echo $confirmation['delivery_address']; ?></td>
-                                    </tr>
-                            <?php
-                                }
-                            }
-                            ?>
-                        </tbody>
-                    </table>
+                                    <thead>
+                                        <tr>
+                                        <th scope="col">Order ID</th>
+                                            <th scope="col">Product Name</th>
+                                            <th scope="col">Image</th>
+                                            <th scope="col">Quantity</th>
+                                            <th scope="col">total money</th>
+                                            
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php
+    if ($order_details != null) {
+        foreach ($order_details as $order_detail) {
+            $product_id = $order_detail['product_id'];
+
+            // Truy vấn dữ liệu từ bảng product dựa trên product_id
+            $sql = "SELECT * FROM product WHERE product_id = '$product_id'";
+            $product = executeSingleResult($sql);
+
+            // Kiểm tra và hiển thị thông tin sản phẩm
+            if ($product) {
+                $product_name = $product['product_name'];
+                $image = $product['image'];
+                $quantity = $product['quantity'];
+
+                
+                
+                echo '<tr>';
+                echo '<td>'.$order_detail['order_id'].'</td>';
+                echo '<td>'.$product_name.'</td>';
+                echo '<td><img src="'.$image.'" alt="Product Image" style="width: 100px;"></td>';
+
+                echo '<td>'.$quantity.'</td>'; 
+                // Hiển thị các thông tin khác về sản phẩm
+
+                echo '</tr>';
+            }
+        }
+    }
+    ?>
+</tbody>
+                                </table>
                 </div>
             </div>
         </div>
